@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MES Apriso Interview Questions Bank</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Space+Grotesk:wght@300;400;600;700&display=swap');
+
+  :root {
+    --bg: #0a0e17;
+    --panel: #111827;
+    --border: #1e2d40;
+    --accent: #00d4ff;
+    --accent2: #ff6b35;
+    --accent3: #7c3aed;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --easy: #22c55e;
+    --medium: #f59e0b;
+    --hard: #ef4444;
+    --tag-bg: #1e2d40;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* HEADER */
+  header {
+    text-align: center;
+    margin-bottom: 48px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+
+  .badge {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--accent3), var(--accent));
+    color: white;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 4px 14px;
+    border-radius: 2px;
+    margin-bottom: 16px;
+  }
+
+  h1 {
+    font-size: clamp(28px, 5vw, 52px);
+    font-weight: 700;
+    line-height: 1.1;
+    background: linear-gradient(135deg, #fff 30%, var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 12px;
+  }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 15px;
+    font-weight: 300;
+  }
+
+  .meta-row {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+
+  .meta-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-size: 13px;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .dot-green { background: var(--easy); }
+  .dot-amber { background: var(--medium); }
+  .dot-red { background: var(--hard); }
+  .dot-blue { background: var(--accent); }
+
+  /* SEARCH & FILTER */
+  .controls {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .search-wrap {
+    flex: 1;
+    min-width: 200px;
+    position: relative;
+  }
+
+  .search-wrap input {
+    width: 100%;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+    padding: 10px 16px 10px 40px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .search-wrap input:focus { border-color: var(--accent); }
+  .search-wrap input::placeholder { color: var(--muted); }
+
+  .search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    font-size: 16px;
+  }
+
+  .filter-btns {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .filter-btn {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--muted);
+    cursor: pointer;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    padding: 8px 14px;
+    text-transform: uppercase;
+    transition: all 0.2s;
+  }
+
+  .filter-btn:hover, .filter-btn.active {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(0,212,255,0.05);
+  }
+
+  /* SECTION */
+  .section {
+    margin-bottom: 36px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .section-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .section-count {
+    margin-left: auto;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2px 8px;
+  }
+
+  /* QUESTION CARD */
+  .q-grid {
+    display: grid;
+    gap: 10px;
+  }
+
+  .q-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 18px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .q-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--accent);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .q-card:hover {
+    border-color: rgba(0,212,255,0.3);
+    transform: translateX(3px);
+  }
+
+  .q-card:hover::before { opacity: 1; }
+  .q-card.open { border-color: rgba(0,212,255,0.3); }
+  .q-card.open::before { opacity: 1; }
+
+  .q-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .q-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .q-text {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.5;
+    color: var(--text);
+    flex: 1;
+  }
+
+  .q-tags {
+    display: flex;
+    gap: 6px;
+    margin-left: auto;
+    flex-shrink: 0;
+    align-items: center;
+  }
+
+  .tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .tag-easy { background: rgba(34,197,94,0.1); color: var(--easy); border: 1px solid rgba(34,197,94,0.2); }
+  .tag-medium { background: rgba(245,158,11,0.1); color: var(--medium); border: 1px solid rgba(245,158,11,0.2); }
+  .tag-hard { background: rgba(239,68,68,0.1); color: var(--hard); border: 1px solid rgba(239,68,68,0.2); }
+
+  .q-chevron {
+    color: var(--muted);
+    font-size: 12px;
+    transition: transform 0.2s;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .q-card.open .q-chevron { transform: rotate(180deg); }
+
+  .q-answer {
+    display: none;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px dashed var(--border);
+  }
+
+  .q-card.open .q-answer { display: block; }
+
+  .q-answer p {
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: #94a3b8;
+    margin-bottom: 8px;
+  }
+
+  .q-answer ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .q-answer ul li {
+    font-size: 13px;
+    color: #94a3b8;
+    line-height: 1.6;
+    padding: 3px 0 3px 18px;
+    position: relative;
+  }
+
+  .q-answer ul li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-size: 10px;
+  }
+
+  .q-answer code {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    background: rgba(0,212,255,0.08);
+    border: 1px solid rgba(0,212,255,0.15);
+    color: var(--accent);
+    padding: 2px 6px;
+    border-radius: 3px;
+  }
+
+  .note {
+    background: rgba(124,58,237,0.08);
+    border: 1px solid rgba(124,58,237,0.2);
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 12.5px;
+    color: #a78bfa;
+    margin-top: 10px;
+  }
+
+  /* HIDDEN */
+  .q-card.hidden { display: none; }
+
+  /* PROGRESS */
+  .progress-bar-wrap {
+    height: 2px;
+    background: var(--border);
+    border-radius: 2px;
+    margin-bottom: 8px;
+    overflow: hidden;
+  }
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent3), var(--accent));
+    border-radius: 2px;
+    transition: width 0.3s;
+  }
+
+  footer {
+    text-align: center;
+    margin-top: 60px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 12px;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  @media (max-width: 600px) {
+    .q-tags { display: none; }
+    .meta-row { gap: 10px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="badge">Infosys · MES Apriso · Interview Prep</div>
+    <h1>Apriso Developer<br>Question Bank</h1>
+    <p class="subtitle">Experience Range: 0–4 Years &nbsp;|&nbsp; Fresher to Junior Developer</p>
+    <div class="meta-row">
+      <div class="meta-chip"><span class="dot dot-blue"></span> 60+ Questions</div>
+      <div class="meta-chip"><span class="dot dot-green"></span> Beginner</div>
+      <div class="meta-chip"><span class="dot dot-amber"></span> Intermediate</div>
+      <div class="meta-chip"><span class="dot dot-red"></span> Advanced</div>
+    </div>
+  </header>
+
+  <div class="controls">
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" id="searchInput" placeholder="Search questions...">
+    </div>
+    <div class="filter-btns">
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="easy">Beginner</button>
+      <button class="filter-btn" data-filter="medium">Intermediate</button>
+      <button class="filter-btn" data-filter="hard">Advanced</button>
+    </div>
+  </div>
+
+  <!-- SECTION 1 -->
+  <div class="section" data-section="basics">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(0,212,255,0.1)">🏭</div>
+      <span class="section-title">MES & Apriso Fundamentals</span>
+      <span class="section-count" id="count-1"></span>
+    </div>
+    <div class="q-grid" id="grid-1"></div>
+  </div>
+
+  <!-- SECTION 2 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(124,58,237,0.1)">⚙️</div>
+      <span class="section-title">Apriso Architecture & Components</span>
+      <span class="section-count" id="count-2"></span>
+    </div>
+    <div class="q-grid" id="grid-2"></div>
+  </div>
+
+  <!-- SECTION 3 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(255,107,53,0.1)">💻</div>
+      <span class="section-title">Process Builder & Operations</span>
+      <span class="section-count" id="count-3"></span>
+    </div>
+    <div class="q-grid" id="grid-3"></div>
+  </div>
+
+  <!-- SECTION 4 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(34,197,94,0.1)">🔗</div>
+      <span class="section-title">Integration & Data Management</span>
+      <span class="section-count" id="count-4"></span>
+    </div>
+    <div class="q-grid" id="grid-4"></div>
+  </div>
+
+  <!-- SECTION 5 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(245,158,11,0.1)">🗄️</div>
+      <span class="section-title">Database & SQL in Apriso</span>
+      <span class="section-count" id="count-5"></span>
+    </div>
+    <div class="q-grid" id="grid-5"></div>
+  </div>
+
+  <!-- SECTION 6 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(239,68,68,0.1)">🛠️</div>
+      <span class="section-title">Troubleshooting & Scenario-Based</span>
+      <span class="section-count" id="count-6"></span>
+    </div>
+    <div class="q-grid" id="grid-6"></div>
+  </div>
+
+  <!-- SECTION 7 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(0,212,255,0.08)">🌐</div>
+      <span class="section-title">HR & Behavioral (MES Context)</span>
+      <span class="section-count" id="count-7"></span>
+    </div>
+    <div class="q-grid" id="grid-7"></div>
+  </div>
+
+  <footer>MES Apriso Interview Question Bank &nbsp;·&nbsp; Infosys Prep &nbsp;·&nbsp; 0–4 Yrs Experience</footer>
+</div>
+
+<script>
+const sections = {
+  1: {
+    questions: [
+      {
+        q: "What is MES (Manufacturing Execution System) and what is its role in manufacturing?",
+        a: `<p>MES is a software system that connects, monitors, and controls complex manufacturing systems and data flows on the factory floor. It sits between ERP (Enterprise Resource Planning) and the plant floor.</p>
+        <ul>
+          <li>Tracks and documents real-time production from raw materials to finished goods</li>
+          <li>Manages work orders, scheduling, quality control, material tracking, and labor</li>
+          <li>Bridges the gap between planning systems (ERP like SAP) and actual shop floor operations</li>
+          <li>Provides traceability and genealogy of manufactured products</li>
+        </ul>`,
+        level: "easy"
+      },
+      {
+        q: "What is Apriso (DELMIA Apriso) and who is its current vendor?",
+        a: `<p>Apriso is a Manufacturing Execution System (MES) solution now branded as <code>DELMIA Apriso</code>, owned by Dassault Systèmes. It was originally developed by Apriso Corporation and acquired by Dassault Systèmes in 2013.</p>
+        <ul>
+          <li>Used for global manufacturing operations management (MOM)</li>
+          <li>Provides process-driven, configurable workflows across multiple plants</li>
+          <li>Supports discrete, process, and hybrid manufacturing industries</li>
+          <li>Runs on the FlexNet platform</li>
+        </ul>`,
+        level: "easy"
+      },
+      {
+        q: "What is the FlexNet platform in Apriso?",
+        a: `<p>FlexNet is the underlying application platform on which DELMIA Apriso is built. It provides the runtime environment for all Apriso processes and operations.</p>
+        <ul>
+          <li>Object-oriented, process-driven platform</li>
+          <li>Supports multi-site, multi-language deployments</li>
+          <li>Provides the Process Builder IDE for development</li>
+          <li>Handles security, sessions, transactions, and scalability</li>
+          <li>Built on a 3-tier architecture: client, application server, database</li>
+        </ul>`,
+        level: "easy"
+      },
+      {
+        q: "What industries typically use Apriso MES?",
+        a: `<ul>
+          <li>Aerospace & Defense</li>
+          <li>Automotive manufacturing</li>
+          <li>High-tech electronics</li>
+          <li>Medical devices & pharmaceuticals</li>
+          <li>Industrial equipment / heavy machinery</li>
+          <li>Consumer goods & packaging</li>
+        </ul>
+        <p>Apriso excels in regulated industries where traceability, genealogy, and compliance are critical.</p>`,
+        level: "easy"
+      },
+      {
+        q: "What are the key modules/functional areas in DELMIA Apriso?",
+        a: `<ul>
+          <li><strong>Production Management</strong> – Work orders, scheduling, execution</li>
+          <li><strong>Quality Management</strong> – Inspection plans, NCR, CAPA</li>
+          <li><strong>Inventory & Material Management</strong> – Lot tracking, warehouse</li>
+          <li><strong>Labor Management</strong> – Time tracking, skills, certifications</li>
+          <li><strong>Genealogy & Traceability</strong> – Bill of Process, full traceability tree</li>
+          <li><strong>Equipment Management</strong> – OEE, maintenance, calibration</li>
+          <li><strong>Global Process Management</strong> – Multi-site process governance</li>
+        </ul>`,
+        level: "easy"
+      },
+      {
+        q: "What is the difference between ERP and MES? How does Apriso integrate with SAP?",
+        a: `<p><strong>ERP</strong> handles business-level planning: orders, procurement, finance, HR. <strong>MES</strong> handles real-time shop floor execution.</p>
+        <ul>
+          <li>ERP creates production orders → MES executes and tracks them</li>
+          <li>MES sends actual quantities, labor, quality data back to ERP</li>
+          <li>Apriso integrates with SAP via IDOC, BAPI, RFC, or REST/Web Services</li>
+          <li>Apriso has a dedicated SAP Integration Framework with standard adapters</li>
+          <li>Common exchanges: Work orders, Confirmations, Goods movements, Quality notifications</li>
+        </ul>`,
+        level: "medium"
+      },
+      {
+        q: "What is ISA-95 (S95) standard and how is it relevant to Apriso?",
+        a: `<p>ISA-95 is an international standard for developing an automated interface between enterprise and plant floor systems. Apriso is designed around ISA-95 / IEC 62264 data models.</p>
+        <ul>
+          <li>Defines levels: Level 3 (MES/MOM) sits between Level 4 (ERP) and Level 2 (SCADA/PLC)</li>
+          <li>Apriso's object model (Personnel, Equipment, Material, Process Segments) maps to ISA-95</li>
+          <li>Helps ensure interoperability between Apriso and other enterprise systems</li>
+        </ul>`,
+        level: "medium"
+      }
+    ]
+  },
+  2: {
+    questions: [
+      {
+        q: "Describe the 3-tier architecture of DELMIA Apriso.",
+        a: `<ul>
+          <li><strong>Presentation Tier</strong> – Web browser client (HTML5/JavaScript UI). Users interact via Apriso portals and screens</li>
+          <li><strong>Application Tier</strong> – FlexNet Application Server (Java-based). Hosts business logic, process execution engine, and services</li>
+          <li><strong>Data Tier</strong> – Database (Oracle or MS SQL Server). Stores all manufacturing data, metadata, configurations</li>
+        </ul>
+        <div class="note">Apriso moved to a web-based UI from the older Windows-based client.</div>`,
+        level: "easy"
+      },
+      {
+        q: "What is a Business Process in Apriso? What are its main components?",
+        a: `<p>A Business Process in Apriso is a configurable workflow that defines how a manufacturing task is executed. It is created and managed in Process Builder.</p>
+        <ul>
+          <li><strong>Operations</strong> – Logical steps/tasks within a process</li>
+          <li><strong>Transitions</strong> – Flow control between operations (conditional or unconditional)</li>
+          <li><strong>Parameters</strong> – Input/output data passed between operations</li>
+          <li><strong>Resources</strong> – Equipment, personnel, material involved</li>
+          <li><strong>Events</strong> – Triggers that start or branch processes</li>
+        </ul>`,
+        level: "easy"
+      },
+      {
+        q: "What is Process Builder in Apriso? What is it used for?",
+        a: `<p>Process Builder is the Integrated Development Environment (IDE) in Apriso used by developers to design, configure, and deploy business processes and operations.</p>
+        <ul>
+          <li>Drag-and-drop workflow designer for defining process flows</li>
+          <li>Configure operations, transitions, parameters, and rules</li>
+          <li>Write scripting logic (VBScript/JScript within operations)</li>
+          <li>Manage database queries and integrations</li>
+          <li>Deploy configurations to environments (dev, test, prod)</li>
+        </ul>`,
+        level: "easy"
+      },
+      {
+        q: "What is an Operation in Apriso? What are the types of operations?",
+        a: `<p>An Operation is the fundamental executable unit within a Business Process. Each operation performs a specific action.</p>
+        <ul>
+          <li><strong>Sub-Process Operation</strong> – Calls another business process</li>
+          <li><strong>Database Operation</strong> – Executes SQL queries (SELECT, INSERT, UPDATE)</li>
+          <li><strong>Scripting Operation</strong> – Contains VBScript/JavaScript for custom logic</li>
+          <li><strong>Integration Operation</strong> – Calls external web services or APIs</li>
+          <li><strong>View Operation</strong> – Renders a UI screen to the user</li>
+          <li><strong>Event Operation</strong> – Raises or handles system events</li>
+          <li><strong>Decision Operation</strong> – Evaluates conditions to route flow</li>
+        </ul>`,
+        level: "easy"
+      },
+      {
+        q: "What is a Container in Apriso? What are its types?",
+        a: `<p>A Container is a logical grouping of processes or functions in Apriso, similar to a module or package.</p>
+        <ul>
+          <li><strong>Business Process Container</strong> – Groups related business processes</li>
+          <li><strong>Operation Container</strong> – Groups re-usable operations</li>
+          <li><strong>Global Container</strong> – Shared across the platform (standard Apriso objects)</li>
+          <li><strong>Customer Container</strong> – Custom/customer-specific configurations</li>
+        </ul>
+        <div class="note">It is a best practice to never modify Global/Standard containers; always extend them in Customer containers.</div>`,
+        level: "medium"
+      },
+      {
+        q: "What is a Work Order in Apriso and what is its lifecycle?",
+        a: `<ul>
+          <li><strong>Created</strong> – Work order received (from ERP or manually)</li>
+          <li><strong>Scheduled</strong> – Assigned to a facility/line/machine</li>
+          <li><strong>Released</strong> – Made available for shop floor execution</li>
+          <li><strong>In Progress</strong> – Active production underway</li>
+          <li><strong>Completed</strong> – All operations finished</li>
+          <li><strong>Closed</strong> – Confirmed back to ERP (e.g., SAP confirmation)</li>
+        </ul>`,
+        level: "easy"
+      },
+      {
+        q: "What is a Lot/Serialized Unit in Apriso? What is the difference?",
+        a: `<p>Apriso supports two material tracking modes:</p>
+        <ul>
+          <li><strong>Lot</strong> – A batch quantity tracked by a single Lot ID. Example: 100 units in Lot 001</li>
+          <li><strong>Serialized Unit (SU)</strong> – Each individual unit has a unique serial number</li>
+          <li>Serialized tracking is used for high-value or regulated products (aerospace, medical)</li>
+          <li>Lots are preferred for high-volume, low-cost discrete or process manufacturing</li>
+        </ul>`,
+        level: "easy"
+      },
+      {
+        q: "What is the Bill of Process (BOP) in Apriso?",
+        a: `<p>The Bill of Process (BOP) defines the sequence of operations required to manufacture a product. It is the manufacturing equivalent of a Bill of Materials (BOM).</p>
+        <ul>
+          <li>Defines which operations to perform and in what sequence</li>
+          <li>Links to equipment, personnel skills, and material requirements</li>
+          <li>Drives the execution of work orders on the shop floor</li>
+          <li>Can be plant-specific or global/template-based</li>
+          <li>Also called Process Plan or Routing in some MES systems</li>
+        </ul>`,
+        level: "medium"
+      }
+    ]
+  },
+  3: {
+    questions: [
+      {
+        q: "How do you pass parameters between operations in a Process Builder flow?",
+        a: `<p>Parameters are the data-passing mechanism between operations in a business process.</p>
+        <ul>
+          <li>Each operation can define <strong>Input</strong> and <strong>Output</strong> parameters</li>
+          <li>Parameters are mapped in the Process Builder transition/mapping screen</li>
+          <li>Process-level parameters can be shared across all operations in the process</li>
+          <li>Types include: String, Integer, Double, Boolean, Date, Object, Collection</li>
+          <li>Use <code>Get/Set Parameter</code> script functions to manipulate them in scripting operations</li>
+        </ul>`,
+        level: "easy"
+      },
+      {
+        q: "What scripting language is used in Apriso operations and what are common use cases?",
+        a: `<p>Apriso supports <strong>VBScript</strong> (primarily) and JScript within scripting operations in Process Builder.</p>
+        <ul>
+          <li>Conditional logic: if/else branching based on parameter values</li>
+          <li>String manipulation: parsing, concatenating, formatting data</li>
+          <li>Date/time calculations: computing due dates, shift times</li>
+          <li>Mathematical calculations: yield, scrap, efficiency formulas</li>
+          <li>Calling FlexNet API functions: <code>FlexNet.GetObject()</code>, <code>FlexNet.SetParameter()</code></li>
+          <li>Error handling: raising custom error messages to the UI</li>
+        </ul>`,
+        level: "easy"
+      },
+      {
+        q: "What are Transitions in a Business Process? What types of transitions exist?",
+        a: `<ul>
+          <li><strong>Unconditional Transition</strong> – Always flows to the next operation</li>
+          <li><strong>Conditional Transition</strong> – Flows based on a condition (expression or parameter value)</li>
+          <li><strong>Error Transition</strong> – Routes flow when an operation throws an error</li>
+          <li><strong>Default Transition</strong> – Fallback when no condition is met</li>
+        </ul>
+        <p>Transitions are drawn as arrows in the Process Builder diagram and can carry parameter mappings.</p>`,
+        level: "easy"
+      },
+      {
+        q: "How do you handle errors/exceptions in Apriso processes?",
+        a: `<ul>
+          <li>Use <strong>Error Transitions</strong> in Process Builder to catch operation errors</li>
+          <li>Script operations can use <code>Err.Raise</code> (VBScript) to throw custom errors</li>
+          <li>Use <code>On Error Resume Next</code> for graceful error handling in scripts</li>
+          <li>Log errors using Apriso's logging API: <code>FlexNet.Log()</code></li>
+          <li>Display user-friendly error messages via View operations or pop-up dialogs</li>
+          <li>Rollback transactions by configuring transaction boundaries in the process</li>
+        </ul>`,
+        level: "medium"
+      },
+      {
+        q: "What is a View Operation? How is the Apriso UI designed?",
+        a: `<p>A View Operation renders a screen or form to the end user within a business process flow.</p>
+        <ul>
+          <li>Views are defined using the <strong>Screen Builder</strong> / UI Designer in Apriso</li>
+          <li>Supports standard controls: text fields, dropdowns, grids, buttons, labels</li>
+          <li>Apriso 2016+ uses HTML5-based responsive UI</li>
+          <li>Views bind to process parameters for input/output</li>
+          <li>JavaScript and CSS can be used for custom UI behavior</li>
+          <li>Views can be embedded in Portals (dashboards) for navigation</li>
+        </ul>`,
+        level: "medium"
+      },
+      {
+        q: "What is a Sub-Process call? When would you use it?",
+        a: `<p>A Sub-Process operation calls another Business Process from within a parent process.</p>
+        <ul>
+          <li>Used for <strong>reusability</strong> – common logic encapsulated once and called from many places</li>
+          <li>Used for <strong>modularization</strong> – breaking large processes into manageable chunks</li>
+          <li>Parameters are mapped between caller and callee process</li>
+          <li>Examples: Common validation logic, SAP integration calls, quality inspection sub-flows</li>
+        </ul>`,
+        level: "medium"
+      },
+      {
+        q: "What are Collections in Apriso? How are they used in Process Builder?",
+        a: `<p>Collections are list-type parameters in Apriso — essentially arrays or recordsets of data.</p>
+        <ul>
+          <li>Database operations return result sets as Collections</li>
+          <li>Collections can be iterated in loops within scripting operations</li>
+          <li>Bound to grid controls in View operations to display tabular data</li>
+          <li>Common methods: <code>Collection.Count</code>, <code>Collection.Item(index)</code></li>
+          <li>Used for displaying multiple work orders, lots, or inspection results in a table</li>
+        </ul>`,
+        level: "medium"
+      },
+      {
+        q: "What are FlexNet API functions? Give examples you have used.",
+        a: `<p>FlexNet API is a set of built-in functions available in Apriso scripting operations to interact with the platform.</p>
+        <ul>
+          <li><code>FlexNet.GetObject("ClassName")</code> – Get a business object instance</li>
+          <li><code>FlexNet.SetParameter("ParamName", value)</code> – Set a process parameter</li>
+          <li><code>FlexNet.GetParameter("ParamName")</code> – Read a process parameter</li>
+          <li><code>FlexNet.Log(message, level)</code> – Write to Apriso log</li>
+          <li><code>FlexNet.RaiseError(code, message)</code> – Throw a custom error</li>
+          <li><code>FlexNet.GetCurrentUser()</code> – Get logged-in user info</li>
+        </ul>`,
+        level: "medium"
+      }
+    ]
+  },
+  4: {
+    questions: [
+      {
+        q: "How does Apriso integrate with SAP? What are the common integration points?",
+        a: `<p>Apriso integrates with SAP using multiple mechanisms:</p>
+        <ul>
+          <li><strong>IDOCs</strong> – For batch/asynchronous message exchange (e.g., production orders, goods movements)</li>
+          <li><strong>RFC/BAPI</strong> – Synchronous function calls to SAP modules</li>
+          <li><strong>Web Services (SOAP/REST)</strong> – For modern integrations</li>
+          <li><strong>SAP Integration Framework (SIF)</strong> – Apriso's built-in SAP adapter</li>
+          <li>Common flows: Receive Work Orders from SAP PP, Send Production Confirmations, Goods Issue/Receipt, Quality Notifications</li>
+        </ul>`,
+        level: "medium"
+      },
+      {
+        q: "What is the Integration Framework in Apriso? What does it support?",
+        a: `<ul>
+          <li>Apriso's Integration Framework enables connectivity to external systems</li>
+          <li>Supports <strong>Web Services</strong> (SOAP and REST)</li>
+          <li>Supports <strong>Messaging</strong> (JMS, MSMQ, IBM MQ)</li>
+          <li>Supports <strong>File-based</strong> integration (XML, CSV via FTP/SFTP)</li>
+          <li>Supports <strong>Database-to-Database</strong> direct connections</li>
+          <li>Provides SAP-specific adapters (BAPI, IDOC, RFC)</li>
+          <li>Integration Operations in Process Builder call configured integration endpoints</li>
+        </ul>`,
+        level: "medium"
+      },
+      {
+        q: "What is an XML/XSD schema and how is it used in Apriso integration?",
+        a: `<p>XML is used as the primary data exchange format in Apriso integrations.</p>
+        <ul>
+          <li>XSD (XML Schema Definition) defines the structure/validation rules for XML messages</li>
+          <li>Apriso uses XML for SAP IDOC messages, web service payloads, and file-based exchanges</li>
+          <li>Scripting operations parse XML using DOM or XPath functions</li>
+          <li>Import/Export of Apriso configurations is also done via XML packages</li>
+          <li>Mapping operations transform XML from one schema to another</li>
+        </ul>`,
+        level: "medium"
+      },
+      {
+        q: "What is Master Data in Apriso? Give examples.",
+        a: `<p>Master Data is the foundational reference data that defines the manufacturing environment in Apriso.</p>
+        <ul>
+          <li><strong>Facility/Plant</strong> – Physical manufacturing locations</li>
+          <li><strong>Equipment/Resources</strong> – Machines, tools, production lines</li>
+          <li><strong>Personnel/Users</strong> – Operators, supervisors with roles and skills</li>
+          <li><strong>Material/Part</strong> – Products, components, raw materials</li>
+          <li><strong>Bill of Process (BOP)</strong> – Process routing definition</li>
+          <li><strong>Customer/Supplier</strong> – External business partners</li>
+        </ul>`,
+        level: "easy"
+      },
+      {
+        q: "What is a Genealogy in Apriso? How is traceability achieved?",
+        a: `<p>Genealogy in Apriso tracks the complete history of a product — all materials consumed, operations performed, equipment used, and personnel involved in manufacturing.</p>
+        <ul>
+          <li>Parent-child relationships tracked between serial numbers and lots</li>
+          <li>Every operation completion is stamped with timestamp, user, equipment</li>
+          <li>Traceability reports show forward (where did this go?) and backward (what went into this?) views</li>
+          <li>Critical for regulated industries: FDA, AS9100, IATF 16949 compliance</li>
+          <li>Genealogy data stored in the <code>GEN_</code> family of tables in the database</li>
+        </ul>`,
+        level: "medium"
+      }
+    ]
+  },
+  5: {
+    questions: [
+      {
+        q: "What database platforms does Apriso support? What are key database operation types?",
+        a: `<p>Apriso supports <strong>Oracle</strong> and <strong>Microsoft SQL Server</strong> as its backend databases.</p>
+        <ul>
+          <li><strong>SELECT</strong> – Query data for display or processing</li>
+          <li><strong>INSERT</strong> – Create new records (work orders, lots, inspection data)</li>
+          <li><strong>UPDATE</strong> – Modify existing records (status changes, completions)</li>
+          <li><strong>STORED PROCEDURE</strong> – Call DB procedures for complex logic</li>
+          <li>All DB operations in Process Builder use parameterized queries to prevent SQL injection</li>
+        </ul>`,
+        level: "easy"
+      },
+      {
+        q: "How do you write a Database Operation in Apriso Process Builder?",
+        a: `<ul>
+          <li>Add a Database Operation to the process flow in Process Builder</li>
+          <li>Select operation type: Select, Insert, Update, Delete, or Stored Procedure</li>
+          <li>Write the SQL query in the SQL editor panel</li>
+          <li>Map process parameters to SQL query parameters (using <code>:paramName</code> or <code>?</code> syntax)</li>
+          <li>Map result columns to output parameters or collections</li>
+          <li>Configure error handling for no-rows-found or DB errors</li>
+        </ul>`,
+        level: "easy"
+      },
+      {
+        q: "What are some important Apriso database tables you should know?",
+        a: `<ul>
+          <li><code>WO_WORKORDER</code> – Work order header data</li>
+          <li><code>WO_WORKORDEROP</code> – Work order operations</li>
+          <li><code>MA_MATERIAL</code> – Material master</li>
+          <li><code>LO_LOT / SU_SERUNIT</code> – Lot / Serialized unit tracking</li>
+          <li><code>EQ_EQUIPMENT</code> – Equipment master</li>
+          <li><code>QI_INSPPLAN</code> – Quality inspection plans</li>
+          <li><code>GEN_</code> prefix tables – Genealogy records</li>
+          <li><code>USR_USER</code> – User/personnel data</li>
+        </ul>
+        <div class="note">Avoid direct table writes; always use Apriso's API/business logic layers to maintain data integrity.</div>`,
+        level: "hard"
+      },
+      {
+        q: "How do you optimize a slow running database query in an Apriso operation?",
+        a: `<ul>
+          <li>Check for missing indexes on filter columns (WO number, Lot ID, dates)</li>
+          <li>Avoid <code>SELECT *</code> — select only needed columns</li>
+          <li>Use proper <code>WHERE</code> clauses to limit result sets</li>
+          <li>Analyze query execution plan using Oracle EXPLAIN PLAN or SQL Server SSMS</li>
+          <li>Consider adding result pagination for large datasets shown in grids</li>
+          <li>Cache frequently read master data using Apriso caching mechanisms</li>
+          <li>Convert cursors/loops to set-based operations where possible</li>
+        </ul>`,
+        level: "hard"
+      },
+      {
+        q: "What is a stored procedure and when would you use one in Apriso?",
+        a: `<p>A stored procedure is a pre-compiled SQL routine stored in the database server.</p>
+        <ul>
+          <li>Used in Apriso when logic is too complex for a single SQL statement</li>
+          <li>Batch operations: mass status updates, bulk genealogy creation</li>
+          <li>Complex multi-table joins and calculations</li>
+          <li>Reporting queries that aggregate large datasets</li>
+          <li>Called from Apriso using a Database Operation of type "Stored Procedure"</li>
+        </ul>`,
+        level: "medium"
+      }
+    ]
+  },
+  6: {
+    questions: [
+      {
+        q: "A work order is stuck in 'In Progress' status and won't complete. How do you troubleshoot?",
+        a: `<ul>
+          <li>Check the Apriso <strong>Application Server logs</strong> for errors during the completion process</li>
+          <li>Review the <strong>Process Builder</strong> flow for the completion process – identify which operation is failing</li>
+          <li>Check if all required <strong>operations are signed off</strong> (some processes require 100% completion)</li>
+          <li>Verify <strong>material consumption</strong> is fully recorded (open material requirements)</li>
+          <li>Check for <strong>pending quality holds</strong> or NCRs blocking completion</li>
+          <li>Query the database: check <code>WO_WORKORDEROP</code> for operations with 'Open' status</li>
+          <li>If needed, escalate with database-level correction after change management approval</li>
+        </ul>`,
+        level: "medium"
+      },
+      {
+        q: "A business process works in Development but fails in Production. What could be the reasons?",
+        a: `<ul>
+          <li><strong>Data differences</strong> – Test data exists in Dev but not in Prod (master data, config)</li>
+          <li><strong>Deployment issue</strong> – Latest package not fully promoted to Prod</li>
+          <li><strong>Environment config</strong> – DB connection strings, external service URLs differ</li>
+          <li><strong>Security/Permissions</strong> – User roles in Prod may not have same access as Dev</li>
+          <li><strong>Volume/Performance</strong> – Prod data volumes cause timeouts not seen in Dev</li>
+          <li><strong>Integration endpoints</strong> – SAP Prod system has different settings than SAP Dev</li>
+        </ul>`,
+        level: "medium"
+      },
+      {
+        q: "How do you deploy changes from Development to Production in Apriso?",
+        a: `<ul>
+          <li>Export configuration as an <strong>Apriso Package</strong> (XML-based transport)</li>
+          <li>Apply the package to Test/QA environment → perform testing</li>
+          <li>After sign-off, apply the package to Production during a change window</li>
+          <li>Use <strong>Apriso Package Manager</strong> for controlled deployments</li>
+          <li>Document changes in a <strong>Change Record</strong> (ITIL process at Infosys)</li>
+          <li>Perform smoke testing after deployment to verify key processes</li>
+          <li>Have a <strong>rollback plan</strong> ready (backup of previous package)</li>
+        </ul>`,
+        level: "medium"
+      },
+      {
+        q: "A shop floor operator reports that a barcode scan is not working in Apriso. How do you investigate?",
+        a: `<ul>
+          <li>Verify the <strong>physical barcode scanner</strong> is working (test in Notepad)</li>
+          <li>Check the <strong>barcode format</strong> — does it match expected format in the process?</li>
+          <li>Review the <strong>receiving process</strong> in Process Builder — look at the validation scripting</li>
+          <li>Check if the <strong>Lot or Serial number</strong> exists in Apriso database</li>
+          <li>Check Apriso <strong>error logs</strong> for the session/user at time of failure</li>
+          <li>Test with a <strong>known-good barcode</strong> to isolate whether it's a data or hardware issue</li>
+        </ul>`,
+        level: "easy"
+      },
+      {
+        q: "You need to add a new custom field to an existing Apriso screen. What is your approach?",
+        a: `<ul>
+          <li>Understand the <strong>business requirement</strong> — what data needs to be captured and stored</li>
+          <li>Identify if the field maps to an existing DB column or requires a <strong>schema extension</strong></li>
+          <li>Add the field to the <strong>View Operation</strong> UI in Process Builder (Screen Builder)</li>
+          <li>Create or update the <strong>database operation</strong> to save/load the new field</li>
+          <li>Add the parameter to the <strong>business process</strong> flow</li>
+          <li>Test in DEV → document → deploy to PROD via package</li>
+          <li>Use <strong>Apriso's extension mechanism</strong> — avoid modifying standard Global containers</li>
+        </ul>`,
+        level: "medium"
+      },
+      {
+        q: "What is an NCR (Non-Conformance Report) in Apriso QM? How does the NCR process typically work?",
+        a: `<ul>
+          <li>NCR is raised when a product or process fails to meet quality specifications</li>
+          <li><strong>Detection</strong> – Defect found during inspection or production</li>
+          <li><strong>NCR Creation</strong> – Operator/Quality engineer logs NCR in Apriso with defect details, quantity, location</li>
+          <li><strong>Review</strong> – Quality supervisor reviews the NCR</li>
+          <li><strong>Disposition</strong> – Decision: Use As Is, Rework, Scrap, Return to Supplier</li>
+          <li><strong>Resolution</strong> – Corrective actions taken, lot released or scrapped</li>
+          <li><strong>CAPA</strong> – Root cause analysis and corrective/preventive action if needed</li>
+        </ul>`,
+        level: "hard"
+      }
+    ]
+  },
+  7: {
+    questions: [
+      {
+        q: "Tell me about yourself and your exposure to Apriso/MES.",
+        a: `<p><strong>Framework for 0–2 years:</strong></p>
+        <ul>
+          <li>Start with education background and relevant technical skills</li>
+          <li>Mention any Apriso training, certifications (DELMIA Apriso Certified Associate)</li>
+          <li>Describe academic projects or internship exposure to manufacturing/MES</li>
+          <li>Show enthusiasm for manufacturing domain and Infosys's MES practice</li>
+        </ul>
+        <p><strong>Framework for 2–4 years:</strong></p>
+        <ul>
+          <li>Describe your specific Apriso project: industry, scope, your role</li>
+          <li>Highlight specific modules: Production, Quality, Integration with SAP</li>
+          <li>Mention achievements: defect resolution, performance improvements</li>
+        </ul>`,
+        level: "easy"
+      },
+      {
+        q: "Why do you want to join Infosys MES (Apriso) practice?",
+        a: `<p><strong>Key talking points:</strong></p>
+        <ul>
+          <li>Infosys is a global leader in MES implementations across automotive, aerospace, hi-tech sectors</li>
+          <li>Opportunity to work on large-scale, global, multi-plant rollouts</li>
+          <li>Access to Infosys's structured training programs (Lex, MES CoE)</li>
+          <li>Apriso/DELMIA is the market-leading MES platform — strong career trajectory</li>
+          <li>Interest in manufacturing technology and Industry 4.0 / smart factory</li>
+        </ul>`,
+        level: "easy"
+      },
+      {
+        q: "How do you handle working with multiple stakeholders (IT, shop floor, quality team)?",
+        a: `<ul>
+          <li>Emphasize clear and simple communication — avoid technical jargon with floor operators</li>
+          <li>Use structured requirement documentation: user stories, functional specs</li>
+          <li>Regular demos and walkthroughs of new features before go-live</li>
+          <li>Change management: training sessions, quick reference guides for end users</li>
+          <li>Escalation path: know when to involve project manager or architect</li>
+        </ul>`,
+        level: "easy"
+      },
+      {
+        q: "Describe a situation where you had to debug a complex issue in Apriso or any software.",
+        a: `<p><strong>Use the STAR method:</strong></p>
+        <ul>
+          <li><strong>Situation</strong> – Describe the context (production system, what was failing)</li>
+          <li><strong>Task</strong> – Your responsibility in resolving it</li>
+          <li><strong>Action</strong> – Systematic debugging: log analysis, process tracing, DB queries, root cause isolation</li>
+          <li><strong>Result</strong> – Resolution, any process improvements implemented to prevent recurrence</li>
+        </ul>
+        <div class="note">For freshers: use examples from academic projects, internships, or any software debugging experience.</div>`,
+        level: "easy"
+      },
+      {
+        q: "What do you know about Industry 4.0 and how does MES fit into it?",
+        a: `<ul>
+          <li>Industry 4.0 = digital transformation of manufacturing using IoT, AI, cloud, big data</li>
+          <li>MES is the core layer connecting smart machines (IoT/SCADA) to enterprise systems (ERP)</li>
+          <li>Apriso collects real-time machine data, OEE metrics, and quality data for analytics</li>
+          <li>Integration with Digital Twin, predictive maintenance, and AI-driven quality inspection</li>
+          <li>Apriso on Dassault Systèmes' 3DEXPERIENCE platform connects to broader digital thread</li>
+        </ul>`,
+        level: "medium"
+      },
+      {
+        q: "What are your strengths and areas of improvement as an Apriso developer?",
+        a: `<p><strong>Sample strengths for this role:</strong></p>
+        <ul>
+          <li>Strong analytical and problem-solving skills for process debugging</li>
+          <li>Good understanding of SQL and database operations</li>
+          <li>Quick learner — ability to pick up new Apriso modules or configurations</li>
+          <li>Attention to detail in testing and quality of deployments</li>
+        </ul>
+        <p><strong>Sample areas of improvement (be honest but constructive):</strong></p>
+        <ul>
+          <li>Building deeper expertise in SAP integration (actively learning SAP PP/QM)</li>
+          <li>Improving performance tuning skills for large-scale database operations</li>
+        </ul>`,
+        level: "easy"
+      }
+    ]
+  }
+};
+
+// Render
+function renderAll() {
+  Object.entries(sections).forEach(([id, sec]) => {
+    const grid = document.getElementById(`grid-${id}`);
+    const count = document.getElementById(`count-${id}`);
+    if (!grid) return;
+    grid.innerHTML = '';
+    let total = 0;
+    sec.questions.forEach((q, i) => {
+      total++;
+      const card = document.createElement('div');
+      card.className = 'q-card';
+      card.dataset.level = q.level;
+      card.dataset.text = q.q.toLowerCase();
+      card.innerHTML = `
+        <div class="q-top">
+          <span class="q-num">${String(i+1).padStart(2,'0')}</span>
+          <span class="q-text">${q.q}</span>
+          <div class="q-tags">
+            <span class="tag tag-${q.level}">${q.level === 'easy' ? 'Beginner' : q.level === 'medium' ? 'Intermediate' : 'Advanced'}</span>
+          </div>
+          <span class="q-chevron">▾</span>
+        </div>
+        <div class="q-answer">${q.a}</div>
+      `;
+      card.addEventListener('click', () => {
+        card.classList.toggle('open');
+      });
+      grid.appendChild(card);
+    });
+    if (count) count.textContent = `${total} questions`;
+  });
+}
+
+// Filter
+let currentFilter = 'all';
+let currentSearch = '';
+
+function applyFilter() {
+  document.querySelectorAll('.q-card').forEach(card => {
+    const lvl = card.dataset.level;
+    const txt = card.dataset.text;
+    const levelOk = currentFilter === 'all' || lvl === currentFilter;
+    const searchOk = !currentSearch || txt.includes(currentSearch);
+    card.classList.toggle('hidden', !(levelOk && searchOk));
+  });
+}
+
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = btn.dataset.filter;
+    applyFilter();
+  });
+});
+
+document.getElementById('searchInput').addEventListener('input', e => {
+  currentSearch = e.target.value.toLowerCase().trim();
+  applyFilter();
+});
+
+renderAll();
+</script>
+</body>
+</html>
