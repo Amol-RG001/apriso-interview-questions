@@ -7,7 +7,8 @@ const SECTIONS_META = [
   { id: 5, title: "Database & SQL in Apriso",         icon: "🗄️",  color: "rgba(245,158,11,0.1)" },
   { id: 6, title: "Troubleshooting & Scenario-Based", icon: "🛠️",  color: "rgba(239,68,68,0.1)" },
   { id: 7, title: "HR & Behavioral (MES Context)",    icon: "🌍", color: "rgba(0,212,255,0.08)" },
-  { id: 8, title: "SQL, Web & Apriso Dev Questions",  icon: "📝", color: "rgba(255,107,53,0.12)" }
+  { id: 8, title: "SQL, Web & Apriso Dev Questions",  icon: "📝", color: "rgba(255,107,53,0.12)" },
+  { id: 9, title: "Advanced Concepts & Scenario Questions", icon: "🔬", color: "rgba(0,212,255,0.12)" }
 ];
 
 const SECTIONS_DATA = {
@@ -480,6 +481,389 @@ WHERE  Status = 'Active'</pre><div class="note">The container must be a <strong>
       q: "What is WipOrderType used in Replenishment Order in Apriso?",
       a: `<p><strong>WipOrderType</strong> is a field/parameter that classifies the type of WIP (Work In Progress) order being created.</p><table><tr><th>WipOrderType</th><th>Meaning</th></tr><tr><td>Production</td><td>Standard manufacturing order</td></tr><tr><td>Replenishment</td><td>Auto-triggered to refill stock to min level</td></tr><tr><td>Rework</td><td>Order for rework of defective items</td></tr><tr><td>Transfer</td><td>Internal material transfer order</td></tr></table><p><strong>In Replenishment flow:</strong></p><ul><li>When a material falls below <strong>min stock level</strong>, a Replenishment Order is triggered</li><li><code>WipOrderType = 'Replenishment'</code> is set to identify and route it separately</li><li>Used in <strong>determination rules</strong> to apply different routing, BOM, or approval workflows</li><li>Replenishment orders bypass some standard production steps</li></ul>`,
       level: "hard"
+    }
+  ],
+  9: [
+    {
+      q: "What separates a Stored Procedure from a Business Component (GBO) in Apriso?",
+      a: `<p>Both encapsulate reusable logic, but they operate at different layers of the Apriso architecture.</p>
+<table>
+<tr><th>Aspect</th><th>Stored Procedure (SP)</th><th>Business Component (GBO)</th></tr>
+<tr><td>Layer</td><td>Database layer (SQL Server / Oracle)</td><td>Application layer (FlexNet runtime)</td></tr>
+<tr><td>Language</td><td>T-SQL / PL-SQL</td><td>VBScript / JScript + FlexNet API</td></tr>
+<tr><td>Access</td><td>Called via Database Operation in Process Builder</td><td>Called via <code>FlexNet.GetObject()</code> or Sub-Process operation</td></tr>
+<tr><td>Knows Apriso context?</td><td>No — has no awareness of sessions, parameters, or UI</td><td>Yes — full access to session, user, parameters, transactions</td></tr>
+<tr><td>Transaction control</td><td>Internal DB transactions only</td><td>Participates in Apriso's distributed transaction</td></tr>
+<tr><td>Reusability</td><td>Shared across any DB client</td><td>Shared across Apriso processes only</td></tr>
+<tr><td>Best used for</td><td>Complex multi-table set-based operations, bulk updates, reporting</td><td>Business rule enforcement, workflow steps, integration calls</td></tr>
+</table>
+<div class="note">Rule of thumb: use a Stored Procedure when the logic is purely data-centric and set-based. Use a Business Component (GBO) when the logic needs to interact with Apriso objects, sessions, or trigger further process steps.</div>`,
+      level: "hard"
+    },
+    {
+      q: "What is the difference between Classic Determination and Advanced Determination in Apriso?",
+      a: `<p><strong>Determination</strong> in Apriso decides which Business Process or Operation to invoke at runtime based on a set of rules. There are two modes:</p>
+<table>
+<tr><th>Aspect</th><th>Classic Determination</th><th>Advanced Determination</th></tr>
+<tr><td>Rule complexity</td><td>Single-level, static rules evaluated top-to-bottom</td><td>Multi-condition decision tables with priorities and wildcards</td></tr>
+<tr><td>Configuration tool</td><td>Simple drop-down rule list in Process Builder</td><td>Decision Table editor with AND/OR logic across multiple attributes</td></tr>
+<tr><td>Flexibility</td><td>Low — one attribute drives the decision</td><td>High — combine Facility, Part Family, Order Type, Shift, etc.</td></tr>
+<tr><td>Typical use case</td><td>Route to a fixed process based on one field (e.g., plant code)</td><td>Route dynamically based on combination of part type + defect code + shift</td></tr>
+<tr><td>Maintenance</td><td>Easy — fewer rules, simpler to audit</td><td>Requires planning; large tables can become complex</td></tr>
+<tr><td>Performance</td><td>Faster — minimal evaluation overhead</td><td>Slightly more overhead due to table evaluation</td></tr>
+</table>
+<p><strong>Example — Classic:</strong> If <code>Facility = 'Plant01'</code> → call Process A.</p>
+<p><strong>Example — Advanced:</strong> If <code>Facility = 'Plant01'</code> AND <code>PartFamily = 'Engine'</code> AND <code>OrderType = 'Rework'</code> → call Process B; otherwise → Process C.</p>
+<div class="note">Advanced Determination is preferred whenever routing logic involves more than one attribute or requires wildcards (*) to catch all unmatched combinations with a default route.</div>`,
+      level: "hard"
+    },
+    {
+      q: "How do you color a cell in an Apriso grid dynamically based on its value?",
+      a: `<p>Cell coloring in Apriso grids is achieved through the <strong>Column Renderer</strong> or <strong>CellClass</strong> configuration combined with JavaScript/CSS.</p>
+<p><strong>Method 1 — CSS class via Column Renderer (GEF HTML grid):</strong></p>
+<pre>// In the column definition of your HTML screen:
+{
+  field: 'Status',
+  headerName: 'Status',
+  cellRenderer: function(params) {
+    var color = '';
+    if (params.value === 'PASS')  color = 'cell-green';
+    if (params.value === 'FAIL')  color = 'cell-red';
+    if (params.value === 'HOLD')  color = 'cell-amber';
+    return '&lt;span class="' + color + '"&gt;' + params.value + '&lt;/span&gt;';
+  }
+}</pre>
+<p><strong>Method 2 — cellClass function (ag-Grid style used in newer Apriso versions):</strong></p>
+<pre>cellClass: function(params) {
+  if (params.value &lt; 0)   return 'cell-red';
+  if (params.value === 0)  return 'cell-amber';
+  return 'cell-green';
+}</pre>
+<p><strong>CSS to define the classes:</strong></p>
+<pre>.cell-green { background-color: rgba(34,197,94,0.15); color: #22c55e; font-weight: 600; }
+.cell-red   { background-color: rgba(239,68,68,0.15);  color: #ef4444; font-weight: 600; }
+.cell-amber { background-color: rgba(245,158,11,0.15); color: #f59e0b; font-weight: 600; }</pre>
+<p><strong>Method 3 — jqGrid (legacy Apriso screens):</strong></p>
+<pre>jQuery("#myGrid").jqGrid({
+  colModel: [{
+    name: 'QtyOnHand',
+    cellattr: function(rowId, val) {
+      if (parseInt(val) &lt; 10) 
+        return 'style="background-color:#fee2e2;"';
+    }
+  }]
+});</pre>
+<div class="note">Always apply coloring via CSS classes rather than inline styles. This keeps the logic maintainable and respects the Apriso theme system.</div>`,
+      level: "hard"
+    },
+    {
+      q: "What is an Action Group and an Action in Apriso? How are they related?",
+      a: `<p>Action Groups and Actions are the mechanism Apriso uses to expose executable operations to the user interface, particularly in IJH (Inline Job Handling) screens and portal dashboards.</p>
+<p><strong>Action</strong> — A named, configurable unit that represents a single executable task. It wraps a Business Process call and defines:</p>
+<ul>
+<li>Which Business Process to invoke</li>
+<li>The label and icon shown on the button</li>
+<li>Pre-conditions: when the action is enabled or hidden (based on WO status, user role, etc.)</li>
+<li>Parameter mappings: what context data is passed into the process</li>
+</ul>
+<p><strong>Action Group</strong> — A named container that groups related Actions together into a logical toolbar or menu set.</p>
+<ul>
+<li>Multiple Actions are bundled inside one Action Group (e.g., "Production Actions" = Start, Complete, Pause, Scrap)</li>
+<li>An Action Group is then assigned to a screen or portal widget</li>
+<li>Controls which set of buttons appears for a given context (role, facility, order type)</li>
+<li>Different Action Groups can be shown to different roles on the same screen</li>
+</ul>
+<table>
+<tr><th>Concept</th><th>Analogy</th><th>Example</th></tr>
+<tr><td>Action</td><td>A single button</td><td>"Start Work Order" button</td></tr>
+<tr><td>Action Group</td><td>A toolbar of buttons</td><td>"Shop Floor Operator Toolbar" with Start, Pause, Complete</td></tr>
+</table>
+<div class="note">Action Groups support role-based visibility. A supervisor's Action Group may include Scrap and Force-Complete actions that are hidden from standard operators.</div>`,
+      level: "medium"
+    },
+    {
+      q: "What are SQL triggers, why are they used in Apriso, and what are the risks?",
+      a: `<p>A <strong>SQL Trigger</strong> is a special stored procedure that automatically executes in response to a DML event (INSERT, UPDATE, DELETE) on a specific table.</p>
+<p><strong>Syntax (SQL Server):</strong></p>
+<pre>CREATE TRIGGER trg_WO_StatusChange
+ON WO_WORKORDER
+AFTER UPDATE
+AS
+BEGIN
+  SET NOCOUNT ON;
+  -- Fires when a work order row is updated
+  IF UPDATE(Status)
+  BEGIN
+    INSERT INTO WO_AuditLog (WorkOrderKey, OldStatus, NewStatus, ChangedOn)
+    SELECT 
+      d.WorkOrderKey,
+      d.Status,       -- deleted = old values
+      i.Status,       -- inserted = new values
+      GETDATE()
+    FROM deleted d
+    JOIN inserted i ON d.WorkOrderKey = i.WorkOrderKey;
+  END
+END;</pre>
+<p><strong>Why triggers are used in Apriso projects:</strong></p>
+<ul>
+<li><strong>Audit logging</strong> — Capture before/after values for regulated change history</li>
+<li><strong>Data synchronization</strong> — Keep a shadow/reporting table in sync without changing Apriso processes</li>
+<li><strong>Constraint enforcement</strong> — Enforce data integrity rules that Apriso's business logic layer does not cover</li>
+<li><strong>Legacy integration</strong> — Notify an external system (via a staging table) when Apriso data changes</li>
+</ul>
+<p><strong>Risks and cautions:</strong></p>
+<ul>
+<li>Triggers fire invisibly — they are not visible in Process Builder and can be very hard to debug</li>
+<li>They add latency to every INSERT/UPDATE/DELETE on the target table</li>
+<li>Recursive or cascading triggers can cause deadlocks on high-volume shop floor tables</li>
+<li>Dassault Systemes officially discourages direct table triggers on core Apriso tables — use Apriso Events or Business Rules instead wherever possible</li>
+</ul>
+<div class="note">If a trigger is required for integration or auditing, always document it in the solution design and test its performance impact under production-volume load.</div>`,
+      level: "hard"
+    },
+    {
+      q: "How do you create a multi-level Tree Business Control (TreeView) in Apriso?",
+      a: `<p>A <strong>Tree Business Control</strong> in Apriso displays hierarchical data (parent-child relationships) in an expandable tree widget. Setting it up involves configuring both the data source and the control itself in Screen Builder.</p>
+<p><strong>Step-by-step setup:</strong></p>
+<ul>
+<li><strong>Step 1 — Design the data model:</strong> Ensure your database table has a self-referencing parent key, e.g., <code>NodeKey</code> and <code>ParentNodeKey</code> columns</li>
+<li><strong>Step 2 — Create a recursive or hierarchical SQL query</strong> that retrieves all levels:</li>
+</ul>
+<pre>-- Using a recursive CTE to build the tree
+WITH TreeCTE AS (
+  SELECT NodeKey, NodeName, ParentNodeKey, 0 AS Level
+  FROM   TreeTable
+  WHERE  ParentNodeKey IS NULL          -- root nodes
+
+  UNION ALL
+
+  SELECT t.NodeKey, t.NodeName, t.ParentNodeKey, tc.Level + 1
+  FROM   TreeTable t
+  JOIN   TreeCTE tc ON t.ParentNodeKey = tc.NodeKey
+)
+SELECT * FROM TreeCTE ORDER BY Level, NodeName;</pre>
+<ul>
+<li><strong>Step 3 — In Screen Builder:</strong> Add a <strong>Tree Control</strong> from the control palette</li>
+<li><strong>Step 4 — Bind the collection:</strong> Map the query result collection to the Tree Control's data source property</li>
+<li><strong>Step 5 — Configure the node fields:</strong>
+  <ul>
+    <li><code>NodeIDField</code> → <code>NodeKey</code></li>
+    <li><code>ParentNodeIDField</code> → <code>ParentNodeKey</code></li>
+    <li><code>NodeTextField</code> → <code>NodeName</code> (label shown in tree)</li>
+  </ul>
+</li>
+<li><strong>Step 6 — Handle node selection:</strong> Wire the <code>OnNodeSelect</code> event to a Business Process that loads child details into a linked form or grid</li>
+</ul>
+<div class="note">For very deep trees (5+ levels) with thousands of nodes, use lazy loading: only query children of a node when the user expands it, rather than loading the entire tree upfront.</div>`,
+      level: "hard"
+    },
+    {
+      q: "How can you automatically create an employee record in Apriso ADC (Automatic Data Collection)?",
+      a: `<p>In Apriso, <strong>ADC (Automatic Data Collection)</strong> refers to the automated capture of shop floor events — typically via barcode scanners, RFID, or badge readers. Automatically creating an employee (Personnel) record when a new badge is first scanned involves the following approach:</p>
+<p><strong>Design pattern:</strong></p>
+<ul>
+<li>The ADC entry point is a Business Process triggered by a badge scan or clock-in event</li>
+<li>The process first checks whether the scanned employee ID already exists in Apriso</li>
+<li>If not found, it calls the <code>CreatePersonnel</code> GBO to auto-create the employee record</li>
+</ul>
+<p><strong>Pseudocode in Process Builder:</strong></p>
+<pre>-- 1. Database Operation: Check if employee exists
+SELECT PersonnelKey 
+FROM   PR_PERSONNEL
+WHERE  EmployeeID = :ScannedBadgeID
+
+-- 2. Scripting Operation: Branch on result
+If Collection.Count = 0 Then
+  ' Employee not found — create automatically
+  FlexNet.SetParameter "EmployeeID",  ScannedBadgeID
+  FlexNet.SetParameter "FirstName",   "Auto"
+  FlexNet.SetParameter "LastName",    "Created"
+  FlexNet.SetParameter "Status",      "Active"
+  ' Call CreatePersonnel GBO
+  Call FlexNet.GetObject("Personnel").Create()
+End If</pre>
+<p><strong>Key configuration points:</strong></p>
+<ul>
+<li>The auto-created employee is assigned a default <strong>Role</strong> and <strong>Skill set</strong> defined in a configuration parameter</li>
+<li>A notification or approval workflow can be triggered post-creation for supervisor review</li>
+<li>Integration with HR/SAP system can populate full name, department, and cost center via a synchronous call during the same process</li>
+<li>All auto-created records are flagged with a <code>Source = 'ADC_AUTO'</code> custom attribute for audit purposes</li>
+</ul>
+<div class="note">Ensure that auto-creation is protected by a role-based permission check so that unknown badge IDs cannot arbitrarily inject employee records into production data.</div>`,
+      level: "hard"
+    },
+    {
+      q: "What are Sub-Operation Business Components and Table Components in Apriso?",
+      a: `<p>These are two specialized types of reusable components available in Apriso's Business Component (GBO) framework:</p>
+<p><strong>Sub-Operation Business Component:</strong></p>
+<ul>
+<li>A Business Component designed to be embedded <em>inside</em> another Business Process as a reusable operation step</li>
+<li>It encapsulates a discrete piece of logic (e.g., validate lot status, calculate yield, trigger SAP call) that is needed in multiple parent processes</li>
+<li>Exposed as an Operation Type in Process Builder — dragged onto the canvas just like a built-in operation</li>
+<li>Has its own defined Input/Output parameters and can raise errors that the parent process handles</li>
+<li>Best practice: use Sub-Operation BCs for cross-cutting concerns like logging, validation, and integration handshakes</li>
+</ul>
+<p><strong>Table Component:</strong></p>
+<ul>
+<li>A Business Component that is bound directly to a <strong>database table or view</strong>, auto-generating standard CRUD operations (Create, Read, Update, Delete)</li>
+<li>Acts as a data-access object (DAO) layer — abstracts raw SQL from the process developer</li>
+<li>Provides typed fields that map to table columns, with built-in parameter mapping</li>
+<li>Can be used directly in Process Builder via a <code>Table Component Operation</code></li>
+<li>Reduces boilerplate: instead of writing SELECT/INSERT SQL manually, the developer configures the Table Component once and calls its methods</li>
+</ul>
+<table>
+<tr><th>Feature</th><th>Sub-Operation BC</th><th>Table Component</th></tr>
+<tr><td>Purpose</td><td>Reusable process logic</td><td>Reusable data access</td></tr>
+<tr><td>Contains</td><td>Script + operations</td><td>Table mapping + CRUD methods</td></tr>
+<tr><td>Called via</td><td>Operation node in process flow</td><td>Table Component Operation node</td></tr>
+<tr><td>Typical use</td><td>Validation, integration, calculation</td><td>Read/write to a specific DB table</td></tr>
+</table>`,
+      level: "hard"
+    },
+    {
+      q: "In a paginated Apriso grid with 50 pages of 10 records each, selected records on page 1 appeared deselected after navigating to page 2 and back. How do you fix this?",
+      a: `<p>This is a classic <strong>client-side selection state loss</strong> problem that occurs when the grid re-renders its DOM on page navigation, discarding in-memory selection state. The fix depends on how the grid is implemented.</p>
+<p><strong>Root cause:</strong> On page change, the grid destroys and re-renders the visible rows. If selection state is stored only in the DOM (checked checkboxes), it is lost when those rows are no longer rendered.</p>
+<p><strong>Fix 1 — Maintain a server-side or JavaScript selection store:</strong></p>
+<pre>// Maintain a persistent selection map outside the grid
+var selectedKeys = {};   // { rowKey: rowData }
+
+// On checkbox change
+grid.on('selectionChanged', function(row, isSelected) {
+  if (isSelected) {
+    selectedKeys[row.Key] = row;
+  } else {
+    delete selectedKeys[row.Key];
+  }
+});
+
+// On page render, restore selections
+grid.on('afterPageLoad', function(rows) {
+  rows.forEach(function(row) {
+    if (selectedKeys[row.Key]) {
+      grid.selectRow(row.Key, true);  // re-check the box
+    }
+  });
+});</pre>
+<p><strong>Fix 2 — Use the GEF grid's built-in persistent selection property:</strong></p>
+<ul>
+<li>In the Grid Control properties panel, enable <strong>"Persist Selection Across Pages"</strong> (available in Apriso 2019+)</li>
+<li>Set <code>SelectionMode = MultiRow</code> and <code>PersistSelection = true</code></li>
+<li>The grid internally tracks selected keys in a hidden collection, not in the DOM</li>
+</ul>
+<p><strong>Fix 3 — Pass selection state via a hidden container field:</strong></p>
+<ul>
+<li>On each selection change, serialize the selected keys into a hidden process parameter (comma-separated string or JSON)</li>
+<li>On page navigation, read this parameter and re-apply selections after the new page renders</li>
+</ul>
+<div class="note">The cleanest long-term solution is Fix 2 (platform-native). Fix 1 is used in custom HTML screens where GEF's built-in persistence is unavailable.</div>`,
+      level: "hard"
+    },
+    {
+      q: "In a 5-step Apriso process, a session variable is created in Step 5. Can it be reused in Step 2?",
+      a: `<p><strong>Short answer: No</strong> — not in a standard forward-flowing process execution, but it depends on the process design.</p>
+<p><strong>Why the default answer is No:</strong></p>
+<ul>
+<li>In Apriso, a Business Process executes steps sequentially (Step 1 → 2 → 3 → 4 → 5)</li>
+<li>A session variable created in Step 5 does not exist yet when Step 2 executes during the first pass</li>
+<li>Session variables (stored via <code>FlexNet.Session.SetValue()</code>) are written into the user session at the point of execution — they cannot be read before they are written</li>
+</ul>
+<p><strong>When it CAN work — loop-back or multi-pass designs:</strong></p>
+<ul>
+<li>If the process contains a loop (Step 5 transitions back to Step 2 based on a condition), the variable set in Step 5 <em>will</em> be available when Step 2 executes on the second iteration</li>
+<li>If the session variable was set in a <em>previous execution</em> of the same or a different process in the same user session, Step 2 can read it using <code>FlexNet.Session.GetValue()</code></li>
+</ul>
+<p><strong>Session vs Process parameters — key distinction:</strong></p>
+<table>
+<tr><th>Type</th><th>Scope</th><th>Lifetime</th></tr>
+<tr><td>Process Parameter</td><td>Current process only</td><td>Lives and dies with the process execution</td></tr>
+<tr><td>Session Variable</td><td>Entire user session</td><td>Persists until session ends or explicitly cleared</td></tr>
+</table>
+<pre>-- Step 5: Write session variable
+FlexNet.Session.SetValue "ApprovedQty", 150
+
+-- Step 2 (second pass / next process): Read it
+Dim qty
+qty = FlexNet.Session.GetValue("ApprovedQty")</pre>
+<div class="note">If you need to share data created late in a process with an earlier step, redesign the flow to collect that data upfront, use a loop, or pass it via a parent process parameter rather than relying on session variables.</div>`,
+      level: "hard"
+    },
+    {
+      q: "What are the different types of OPC, and how is OPC used in Apriso MES?",
+      a: `<p><strong>OPC (OLE for Process Control)</strong> is a set of industrial communication standards that enable data exchange between PLCs, SCADA systems, and software applications like Apriso MES.</p>
+<p><strong>OPC Types:</strong></p>
+<table>
+<tr><th>OPC Standard</th><th>Full Name</th><th>Purpose</th></tr>
+<tr><td>OPC DA</td><td>Data Access</td><td>Real-time read/write of current tag values from PLCs and SCADA</td></tr>
+<tr><td>OPC HDA</td><td>Historical Data Access</td><td>Query historical time-series data from a historian (e.g., OSIsoft PI)</td></tr>
+<tr><td>OPC AE</td><td>Alarms &amp; Events</td><td>Subscribe to machine alarms, events, and condition changes</td></tr>
+<tr><td>OPC UA</td><td>Unified Architecture</td><td>Modern, platform-independent, secure successor to all classic OPC specs. Supports TCP, HTTPS, pub/sub</td></tr>
+<tr><td>OPC XML-DA</td><td>XML Data Access</td><td>Web-service-based version of OPC DA using SOAP/XML</td></tr>
+<tr><td>OPC DX</td><td>Data eXchange</td><td>Server-to-server data exchange between OPC servers</td></tr>
+</table>
+<p><strong>How OPC is used in Apriso:</strong></p>
+<ul>
+<li>Apriso connects to an <strong>OPC Server</strong> (e.g., Kepware, Matrikon, Ignition) via its <strong>Integration Framework</strong></li>
+<li>Machine counters, temperatures, cycle times, and status flags are read from PLCs via <strong>OPC DA / UA</strong> tags</li>
+<li>Apriso uses these values to auto-start/complete operations, calculate OEE, and trigger quality checks</li>
+<li><strong>OPC UA</strong> is the preferred standard for new Apriso integrations — it eliminates DCOM security issues and works across operating systems</li>
+<li>OPC AE is used to capture machine downtime events and feed them into Apriso's Equipment Management module</li>
+</ul>
+<div class="note">OPC UA is the Industry 4.0 standard of choice. If your project involves connecting Apriso to modern smart machines or IoT edge devices, insist on OPC UA over the legacy DCOM-based OPC DA.</div>`,
+      level: "medium"
+    },
+    {
+      q: "What data and configurations are required to prepare Master Data in Apriso?",
+      a: `<p>Master Data in Apriso is the foundational configuration that must be in place before any production execution can occur. It is typically set up during the implementation phase.</p>
+<p><strong>Core Master Data categories and their required fields:</strong></p>
+<table>
+<tr><th>Category</th><th>Key Fields Required</th></tr>
+<tr><td>Facility / Plant</td><td>Facility Code, Name, Time Zone, Address, Parent Facility (for multi-site)</td></tr>
+<tr><td>Work Center / Resource</td><td>Resource Code, Name, Type (Machine/Labor), Capacity, Facility linkage</td></tr>
+<tr><td>Equipment</td><td>Equipment ID, Name, Type, Status, Assigned Facility, Calibration interval</td></tr>
+<tr><td>Personnel / Employee</td><td>Employee ID, Name, Role, Skills/Certifications, Shift assignment, Facility</td></tr>
+<tr><td>Material / Part</td><td>Part Number, Description, UOM, Material Type (Raw/WIP/FG), Lot/Serial tracking flag</td></tr>
+<tr><td>Bill of Materials (BOM)</td><td>Parent part, Component parts, Quantity per, Scrap factor, Effective dates</td></tr>
+<tr><td>Bill of Process (BOP)</td><td>Routing steps, Operation sequence, Standard time, Resource requirements per step</td></tr>
+<tr><td>Quality Plan</td><td>Inspection steps, Characteristics, Tolerance limits, Sample size, Linked BOP</td></tr>
+<tr><td>Shifts / Calendar</td><td>Shift codes, Start/End times, Days of operation, Holidays, Facility linkage</td></tr>
+<tr><td>Roles &amp; Permissions</td><td>Role names, Screen/process access rights, Facility scope</td></tr>
+</table>
+<p><strong>Preparation checklist before loading Master Data:</strong></p>
+<ul>
+<li>Obtain the data from ERP (SAP MM, PP modules) or from the customer's data team in Excel/CSV format</li>
+<li>Validate data quality: no duplicates, mandatory fields populated, correct UOM codes</li>
+<li>Define data load sequence — Facility must exist before Equipment; Material before BOM</li>
+<li>Use Apriso's <strong>Master Data Import</strong> tool or build a custom import process for bulk loading</li>
+<li>Perform a data reconciliation check after load: count records in Apriso vs source file</li>
+</ul>
+<div class="note">Always load and validate Master Data in DEV first, then promote to QA for UAT sign-off, before loading into Production. A single missing Part Number or BOP routing can block an entire work order from executing.</div>`,
+      level: "medium"
+    },
+    {
+      q: "What is the difference between a Header (Process Header) and an HTML Header in Apriso?",
+      a: `<p>The term "Header" has two very different meanings in the Apriso context — one at the process/data level and one at the UI/screen level.</p>
+<table>
+<tr><th>Aspect</th><th>Process / Record Header</th><th>HTML Screen Header</th></tr>
+<tr><td>Definition</td><td>The top-level data record of a business object — e.g., the Work Order Header (WO_WORKORDER table row) which holds summary-level fields like WO number, status, planned quantity, and dates</td><td>The visual banner section at the top of an Apriso HTML screen, typically showing context information (WO number, part, facility) that is fixed while the rest of the screen scrolls</td></tr>
+<tr><td>Location</td><td>Database / data model layer</td><td>Screen Builder / HTML UI layer</td></tr>
+<tr><td>Purpose</td><td>Carries the key identifiers and summary attributes of a document; child records (operations, lots, components) reference it via its key</td><td>Provides the operator with persistent context so they always know which WO or lot they are working on, regardless of which tab or section is active</td></tr>
+<tr><td>Example fields</td><td>WorkOrderKey, WorkOrderNo, Status, PlannedQty, ScheduledStart, FacilityKey</td><td>HTML <code>&lt;div class="header"&gt;</code> with labels bound to <code>Container.WorkOrderNo</code>, <code>Container.PartNo</code></td></tr>
+<tr><td>Modified by</td><td>Business Processes (SQL UPDATE on WO_WORKORDER)</td><td>CSS and JavaScript in the screen definition</td></tr>
+</table>
+<p><strong>Example — HTML screen header markup in Apriso:</strong></p>
+<pre>&lt;div class="screen-header"&gt;
+  &lt;span class="label"&gt;Work Order:&lt;/span&gt;
+  &lt;span gef:bind="Container.WorkOrderNo"&gt;&lt;/span&gt;
+
+  &lt;span class="label"&gt;Part:&lt;/span&gt;
+  &lt;span gef:bind="Container.PartNo"&gt;&lt;/span&gt;
+
+  &lt;span class="label"&gt;Status:&lt;/span&gt;
+  &lt;span gef:bind="Container.Status"&gt;&lt;/span&gt;
+&lt;/div&gt;</pre>
+<div class="note">In a design review, always clarify which type of "header" is being discussed. Confusing the data header (database record) with the screen header (UI component) is a common source of miscommunication between developers and functional consultants.</div>`,
+      level: "medium"
     }
   ]
 };
