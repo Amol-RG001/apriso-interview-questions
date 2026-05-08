@@ -1,0 +1,469 @@
+/* styles.css — MES Apriso Interview Question Bank */
+
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Space+Grotesk:wght@300;400;600;700&display=swap');
+
+/* ─── CSS Variables ─────────────────────────────────────── */
+:root {
+  --bg:       #0a0e17;
+  --panel:    #111827;
+  --border:   #1e2d40;
+  --accent:   #00d4ff;
+  --accent2:  #ff6b35;
+  --accent3:  #7c3aed;
+  --text:     #e2e8f0;
+  --muted:    #64748b;
+  --easy:     #22c55e;
+  --medium:   #f59e0b;
+  --hard:     #ef4444;
+}
+
+/* ─── Reset & Base ──────────────────────────────────────── */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Space Grotesk', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Grid background texture */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ─── Layout ────────────────────────────────────────────── */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ─── Header ────────────────────────────────────────────── */
+header {
+  text-align: center;
+  margin-bottom: 48px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--border);
+}
+
+.badge {
+  display: inline-block;
+  background: linear-gradient(135deg, var(--accent3), var(--accent));
+  color: white;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 4px 14px;
+  border-radius: 2px;
+  margin-bottom: 16px;
+}
+
+h1 {
+  font-size: clamp(28px, 5vw, 52px);
+  font-weight: 700;
+  line-height: 1.1;
+  background: linear-gradient(135deg, #fff 30%, var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 12px;
+}
+
+.subtitle {
+  color: var(--muted);
+  font-size: 15px;
+  font-weight: 300;
+}
+
+/* ─── Meta Row ──────────────────────────────────────────── */
+.meta-row {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.meta-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.dot-green  { background: var(--easy); }
+.dot-amber  { background: var(--medium); }
+.dot-red    { background: var(--hard); }
+.dot-blue   { background: var(--accent); }
+
+/* ─── Controls (Search + Filter) ───────────────────────── */
+.controls {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.search-wrap {
+  flex: 1;
+  min-width: 200px;
+  position: relative;
+}
+
+.search-wrap input {
+  width: 100%;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px;
+  padding: 10px 16px 10px 40px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.search-wrap input:focus  { border-color: var(--accent); }
+.search-wrap input::placeholder { color: var(--muted); }
+
+.search-icon {
+  position: absolute;
+  left: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-size: 16px;
+  pointer-events: none;
+}
+
+.filter-btns {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--muted);
+  cursor: pointer;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  padding: 8px 14px;
+  text-transform: uppercase;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+
+.filter-btn:hover,
+.filter-btn.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(0,212,255,0.05);
+}
+
+/* ─── Section ───────────────────────────────────────────── */
+.section {
+  margin-bottom: 36px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.section-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.section-count {
+  margin-left: auto;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  color: var(--muted);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 2px 8px;
+  white-space: nowrap;
+}
+
+/* ─── Question Grid ─────────────────────────────────────── */
+.q-grid {
+  display: grid;
+  gap: 10px;
+}
+
+/* ─── Question Card ─────────────────────────────────────── */
+.q-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px 18px;
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.15s;
+  position: relative;
+  overflow: hidden;
+}
+
+/* left accent bar */
+.q-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--accent);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.q-card:hover {
+  border-color: rgba(0,212,255,0.3);
+  transform: translateX(3px);
+}
+
+.q-card:hover::before,
+.q-card.open::before {
+  opacity: 1;
+}
+
+.q-card.open {
+  border-color: rgba(0,212,255,0.3);
+}
+
+/* ─── Card Top Row ──────────────────────────────────────── */
+.q-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.q-num {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.q-text {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--text);
+  flex: 1;
+}
+
+.q-tags {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+  align-items: center;
+}
+
+/* ─── Level Tags ────────────────────────────────────────── */
+.tag {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tag-easy   { background: rgba(34,197,94,0.1);  color: var(--easy);   border: 1px solid rgba(34,197,94,0.2); }
+.tag-medium { background: rgba(245,158,11,0.1); color: var(--medium); border: 1px solid rgba(245,158,11,0.2); }
+.tag-hard   { background: rgba(239,68,68,0.1);  color: var(--hard);   border: 1px solid rgba(239,68,68,0.2); }
+
+/* ─── Chevron ───────────────────────────────────────────── */
+.q-chevron {
+  color: var(--muted);
+  font-size: 12px;
+  transition: transform 0.2s;
+  flex-shrink: 0;
+  margin-top: 2px;
+  user-select: none;
+}
+
+.q-card.open .q-chevron {
+  transform: rotate(180deg);
+}
+
+/* ─── Answer Panel ──────────────────────────────────────── */
+.q-answer {
+  display: none;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--border);
+}
+
+.q-card.open .q-answer {
+  display: block;
+}
+
+.q-answer p {
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: #94a3b8;
+  margin-bottom: 8px;
+}
+
+.q-answer ul {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 8px;
+}
+
+.q-answer ul li {
+  font-size: 13px;
+  color: #94a3b8;
+  line-height: 1.6;
+  padding: 3px 0 3px 18px;
+  position: relative;
+}
+
+.q-answer ul li::before {
+  content: '\25B8';
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+  font-size: 10px;
+}
+
+.q-answer code {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  background: rgba(0,212,255,0.08);
+  border: 1px solid rgba(0,212,255,0.15);
+  color: var(--accent);
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+.q-answer pre {
+  background: rgba(0,0,0,0.4);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px 14px;
+  margin: 10px 0;
+  overflow-x: auto;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  color: #a5f3fc;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.note {
+  background: rgba(124,58,237,0.08);
+  border: 1px solid rgba(124,58,237,0.2);
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 12.5px;
+  color: #a78bfa;
+  margin-top: 10px;
+}
+
+/* ─── Tables inside answers ─────────────────────────────── */
+.q-answer table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 10px 0;
+  font-size: 12.5px;
+}
+
+.q-answer table th {
+  background: rgba(0,212,255,0.08);
+  color: var(--accent);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  padding: 8px 10px;
+  text-align: left;
+  border: 1px solid var(--border);
+}
+
+.q-answer table td {
+  padding: 7px 10px;
+  color: #94a3b8;
+  border: 1px solid var(--border);
+  vertical-align: top;
+}
+
+.q-answer table tr:nth-child(even) td {
+  background: rgba(255,255,255,0.02);
+}
+
+/* ─── Visibility Helpers ────────────────────────────────── */
+.q-card.hidden {
+  display: none;
+}
+
+/* ─── Footer ────────────────────────────────────────────── */
+footer {
+  text-align: center;
+  margin-top: 60px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 12px;
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+/* ─── Responsive ────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .q-tags       { display: none; }
+  .meta-row     { gap: 10px; }
+  .controls     { flex-direction: column; }
+  .filter-btns  { width: 100%; }
+}
