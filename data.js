@@ -8,7 +8,8 @@ const SECTIONS_META = [
   { id: 6, title: "Troubleshooting & Scenario-Based", icon: "🛠️",  color: "rgba(239,68,68,0.1)" },
   { id: 7, title: "HR & Behavioral (MES Context)",    icon: "🌍", color: "rgba(0,212,255,0.08)" },
   { id: 8, title: "SQL, Web & Apriso Dev Questions",  icon: "📝", color: "rgba(255,107,53,0.12)" },
-  { id: 9, title: "Advanced Concepts & Scenario Questions", icon: "🔬", color: "rgba(0,212,255,0.12)" }
+  { id: 9, title: "Advanced Concepts & Scenario Questions", icon: "🔬", color: "rgba(0,212,255,0.12)" },
+  { id: 10, title: "Views, Controls, Functions & Configuration", icon: "🧩", color: "rgba(124,58,237,0.12)" }
 ];
 
 const SECTIONS_DATA = {
@@ -864,6 +865,863 @@ qty = FlexNet.Session.GetValue("ApprovedQty")</pre>
 &lt;/div&gt;</pre>
 <div class="note">In a design review, always clarify which type of "header" is being discussed. Confusing the data header (database record) with the screen header (UI component) is a common source of miscommunication between developers and functional consultants.</div>`,
       level: "medium"
+    }
+  ],
+  10: [
+    {
+      q: "What are the types of Views (Screen Types) available in Apriso?",
+      a: `<p>In Apriso, a <strong>View</strong> is the UI layer presented to the user during process execution. The platform supports several distinct view types:</p>
+<table>
+<tr><th>View Type</th><th>Description</th><th>Typical Use</th></tr>
+<tr><td><strong>Form View</strong></td><td>Standard HTML form layout with fields, labels, and buttons</td><td>Data entry — work order creation, lot registration</td></tr>
+<tr><td><strong>Grid View</strong></td><td>Tabular display of multiple records with selection and sorting</td><td>Order lists, inventory search results, inspection records</td></tr>
+<tr><td><strong>Report View</strong></td><td>Read-only formatted output, printable</td><td>Work order traveller, quality certificate, packing slip</td></tr>
+<tr><td><strong>Tree View</strong></td><td>Hierarchical parent-child expandable nodes</td><td>BOM explosion, facility hierarchy, genealogy tree</td></tr>
+<tr><td><strong>Dashboard View</strong></td><td>Composite screen with charts, KPIs, and grids</td><td>OEE dashboard, quality metrics, production summary</td></tr>
+<tr><td><strong>IJH View (Inline Job Handling)</strong></td><td>Operator-facing step-by-step execution screen</td><td>Shop floor work order execution, inspection steps</td></tr>
+<tr><td><strong>HTML (Custom) View</strong></td><td>Fully custom HTML5/CSS/JS screen defined by the developer</td><td>Complex UX requirements, AJAX-driven screens, custom layouts</td></tr>
+<tr><td><strong>Message View</strong></td><td>Simple popup/banner displaying a text message</td><td>Confirmation dialogs, warnings, success notifications</td></tr>
+<tr><td><strong>Empty View</strong></td><td>No UI rendered — used for background/silent process steps</td><td>Background data operations that need no user interaction</td></tr>
+</table>
+<div class="note">In modern Apriso implementations (2016+), HTML Custom Views have become the most common type because they allow full control over layout, styling, and client-side behaviour using standard web technologies.</div>`,
+      level: "medium"
+    },
+    {
+      q: "What are the types of Standard Operations in Apriso Process Builder?",
+      a: `<p>Standard Operations are the built-in operation nodes available in Process Builder that developers drag onto the process canvas. Each type performs a specific system-level action:</p>
+<table>
+<tr><th>Operation Type</th><th>Purpose</th></tr>
+<tr><td><strong>View Operation</strong></td><td>Renders a screen (form, grid, message, report) to the user</td></tr>
+<tr><td><strong>Database Operation</strong></td><td>Executes SQL — SELECT, INSERT, UPDATE, DELETE, or Stored Procedure</td></tr>
+<tr><td><strong>Scripting Operation</strong></td><td>Contains VBScript/JScript for custom business logic and calculations</td></tr>
+<tr><td><strong>Sub-Process Operation</strong></td><td>Calls another Business Process (reusability and modularisation)</td></tr>
+<tr><td><strong>Integration Operation</strong></td><td>Calls an external web service (SOAP/REST) or message queue endpoint</td></tr>
+<tr><td><strong>Event Operation</strong></td><td>Raises or handles a FlexNet platform event (e.g. work order status change)</td></tr>
+<tr><td><strong>Decision Operation</strong></td><td>Evaluates a condition and routes the flow to different transitions</td></tr>
+<tr><td><strong>Mail Operation</strong></td><td>Sends an email notification from inside the process flow</td></tr>
+<tr><td><strong>Report Operation</strong></td><td>Generates a report document (PDF, Excel) from a report definition</td></tr>
+<tr><td><strong>Transaction Operation</strong></td><td>Defines transaction boundaries — begin, commit, or rollback</td></tr>
+<tr><td><strong>Table Component Operation</strong></td><td>Calls a configured Table Business Component for CRUD operations</td></tr>
+<tr><td><strong>GBO Operation</strong></td><td>Calls a Global Business Object (standard Apriso API method)</td></tr>
+</table>
+<div class="note">The most frequently used in day-to-day development are View, Database, Scripting, Sub-Process, and GBO operations. Integration and Event operations are used primarily in interface and automation scenarios.</div>`,
+      level: "medium"
+    },
+    {
+      q: "What is OnInitialize and OnLoad in Apriso screens? What is the difference between them?",
+      a: `<p>Both are JavaScript event hooks that run automatically when an Apriso HTML screen loads, but they fire at different points in the page lifecycle:</p>
+<table>
+<tr><th>Aspect</th><th>OnInitialize</th><th>OnLoad</th></tr>
+<tr><td><strong>When it fires</strong></td><td>Before the screen DOM and controls are fully rendered — runs during screen initialisation</td><td>After the complete screen DOM has been rendered and all controls are ready</td></tr>
+<tr><td><strong>What is available</strong></td><td>Container parameters and session data, but most UI controls (grids, dropdowns) are not yet in the DOM</td><td>Full DOM — all controls, grids, input fields are accessible and can be manipulated</td></tr>
+<tr><td><strong>Typical use</strong></td><td>Set default parameter values, configure control visibility flags, prepare data before rendering</td><td>Populate dropdowns with dynamic data, set default field values in controls, apply conditional formatting, trigger AJAX calls</td></tr>
+<tr><td><strong>Control access</strong></td><td>Unsafe — controls may not exist yet</td><td>Safe — all controls are guaranteed to exist</td></tr>
+<tr><td><strong>Equivalent in web</strong></td><td>Similar to <code>DOMContentLoading</code> (early lifecycle)</td><td>Similar to <code>window.onload</code> / jQuery <code>$(document).ready()</code></td></tr>
+</table>
+<pre>// OnInitialize — set a default value before DOM renders
+function OnInitialize() {
+    GEF.Containers["MainContainer"]["Status"].Value = "Active";
+}
+
+// OnLoad — manipulate controls after DOM is ready
+function OnLoad() {
+    // Safe to access grid, dropdowns, etc.
+    var grid = GEF.Controls.getControl("WorkOrderGrid");
+    grid.refresh();
+
+    // Set a field value
+    document.getElementById("txtFacility").value = "Plant01";
+}</pre>
+<div class="note">A very common bug is trying to populate a grid or dropdown inside <code>OnInitialize</code> — the control does not exist yet and the call silently fails. Always use <code>OnLoad</code> for anything that touches the DOM.</div>`,
+      level: "medium"
+    },
+    {
+      q: "What are the types of Business Controls in Apriso? Which ones have you used?",
+      a: `<p>Business Controls are pre-built UI components available in Apriso's Screen Builder (and HTML screens) that provide specific UI behaviours without custom coding:</p>
+<table>
+<tr><th>Business Control</th><th>Description</th></tr>
+<tr><td><strong>Grid / Selection Grid 2.0</strong></td><td>Tabular data display with sorting, filtering, pagination, and multi-select</td></tr>
+<tr><td><strong>ComboBox (Dropdown)</strong></td><td>Single-select dropdown bound to a static list or a database query</td></tr>
+<tr><td><strong>Tree Control</strong></td><td>Expandable hierarchical node tree</td></tr>
+<tr><td><strong>Chart Control</strong></td><td>Bar, line, pie, and gauge charts bound to process data</td></tr>
+<tr><td><strong>Calendar / Date Picker</strong></td><td>Date/time input with a popup calendar selector</td></tr>
+<tr><td><strong>File Upload Control</strong></td><td>Attach documents, images, or files to a record</td></tr>
+<tr><td><strong>Signature Control</strong></td><td>Electronic signature capture for 21 CFR Part 11 compliance</td></tr>
+<tr><td><strong>Barcode Control</strong></td><td>Renders or reads barcodes (Code 128, QR, DataMatrix)</td></tr>
+<tr><td><strong>Tab Control</strong></td><td>Multi-tab layout to organise form sections</td></tr>
+<tr><td><strong>FlexParts Control</strong></td><td>Embeds another FlexPart (sub-screen) inside the current screen</td></tr>
+<tr><td><strong>Gauge Visualization</strong></td><td>Dial/gauge for KPIs like OEE, yield rate</td></tr>
+<tr><td><strong>Checklist Control</strong></td><td>Step-by-step checklist with pass/fail per item</td></tr>
+<tr><td><strong>Image Control</strong></td><td>Display product images, diagrams, or work instructions</td></tr>
+<tr><td><strong>Map Control</strong></td><td>Geographic map for facility/resource locations</td></tr>
+</table>
+<p><strong>Commonly used in production projects:</strong></p>
+<ul>
+<li><strong>Selection Grid 2.0</strong> — primary control for work order lists, lot lists, inspection results</li>
+<li><strong>ComboBox</strong> — facility selection, status filter, disposition type</li>
+<li><strong>Tree Control</strong> — BOM/BOP hierarchy, facility org chart</li>
+<li><strong>Date Picker</strong> — planned start/end date entry on work orders</li>
+<li><strong>File Upload</strong> — attaching quality documents and NCR evidence</li>
+<li><strong>Signature Control</strong> — electronic sign-off in regulated industries</li>
+</ul>`,
+      level: "medium"
+    },
+    {
+      q: "How do you color a grid in Apriso? What are the available approaches?",
+      a: `<p>Grid cell and row coloring in Apriso is achieved through four main techniques. The right choice depends on the grid type (jqGrid vs Selection Grid 2.0) and where the color logic belongs:</p>
+<p><strong>1. Conditional formatting using <code>cellattr</code> (jqGrid — most common in HTML FI screens):</strong></p>
+<pre>{ name: "Status", label: "Status",
+  cellattr: function(rowId, cellValue) {
+    if (cellValue === "FAIL")
+      return 'style="background:#FCEBEB; color:#791F1F; font-weight:500;"';
+    if (cellValue === "PASS")
+      return 'style="background:#EAF3DE; color:#27500A; font-weight:500;"';
+    return '';
+  }
+}</pre>
+<p><strong>2. Custom formatter — inject colored HTML badge inside the cell:</strong></p>
+<pre>formatter: function(cellValue, opts, rowObj) {
+    var bg = cellValue === "PASS" ? "#EAF3DE" : "#FCEBEB";
+    var fg = cellValue === "PASS" ? "#27500A" : "#791F1F";
+    return '&lt;span style="background:'+bg+';color:'+fg+
+           ';padding:2px 8px;border-radius:4px;"&gt;'+cellValue+'&lt;/span&gt;';
+}</pre>
+<p><strong>3. CSS class rules (Selection Grid 2.0 / ag-Grid, Apriso 2019+):</strong></p>
+<pre>// CSS classes defined in your screen stylesheet
+.cell-pass { background: #EAF3DE; color: #27500A; }
+.cell-fail { background: #FCEBEB; color: #791F1F; }
+
+// Column definition
+cellClassRules: {
+  "cell-pass": params =&gt; params.value === "PASS",
+  "cell-fail": params =&gt; params.value === "FAIL"
+}</pre>
+<p><strong>4. Backend-driven logic — return a color code from the SQL query itself:</strong></p>
+<pre>SELECT WorkOrderNo, Status,
+  CASE Status
+    WHEN 'FAIL' THEN '#FCEBEB'
+    WHEN 'PASS' THEN '#EAF3DE'
+    ELSE '#FFFFFF'
+  END AS RowColor
+FROM WO_WORKORDER</pre>
+<p>Then in JS: <code>rowattr: function(rd) { return 'style="background:' + rd.RowColor + ';"'; }</code></p>
+<div class="note">For entire row coloring (not just one cell), use jqGrid's <code>rowattr</code> instead of <code>cellattr</code>. The approach is identical — return an attribute string — but it applies to the <code>&lt;tr&gt;</code> element instead of a <code>&lt;td&gt;</code>.</div>`,
+      level: "medium"
+    },
+    {
+      q: "How do you implement sorting in an Apriso grid?",
+      a: `<p>Sorting in Apriso grids can be applied at three levels: user-driven UI sorting, query-level default sorting, and grid configuration sorting.</p>
+<p><strong>1. UI sorting (user clicks column headers):</strong></p>
+<ul>
+<li>jqGrid enables column header click-to-sort by default when <code>sortable: true</code> is set on the column definition</li>
+<li>The grid handles client-side sorting automatically when all data is loaded at once (<code>loadonce: true</code>)</li>
+<li>For server-side sorting (large datasets), the grid sends <code>sidx</code> (sort column) and <code>sord</code> (asc/desc) parameters to the data source, and the query re-executes with an ORDER BY</li>
+</ul>
+<pre>// jqGrid column definition — enable sorting
+{ name: "PlannedDate", label: "Planned Date",
+  sortable: true, sorttype: "date" }
+
+// Initial sort settings on the grid
+sortname:  "PlannedDate",
+sortorder: "desc"</pre>
+<p><strong>2. Query-based sorting — ORDER BY in the Database Operation SQL:</strong></p>
+<pre>SELECT WorkOrderNo, PartNo, PlannedDate, Status
+FROM   WO_WORKORDER
+WHERE  FacilityKey = :FacilityKey
+ORDER  BY PlannedDate DESC, WorkOrderNo ASC</pre>
+<p><strong>3. Default sort in grid configuration (Selection Grid 2.0):</strong></p>
+<pre>// ag-Grid / Selection Grid 2.0 column definition
+{ field: "PlannedDate", headerName: "Planned Date",
+  sort: "desc",           // default sort direction
+  sortIndex: 0 }          // primary sort column</pre>
+<p><strong>4. Multi-column sorting:</strong></p>
+<pre>// jqGrid — multiSort property
+multiSort: true
+
+// SQL multi-column ORDER BY
+ORDER BY Status ASC, PlannedDate DESC, WorkOrderNo ASC</pre>
+<div class="note">For grids displaying more than a few hundred rows, always sort at the database level (ORDER BY in SQL) rather than relying on client-side sorting. Client-side sorting only operates on the currently loaded page, not the full dataset.</div>`,
+      level: "medium"
+    },
+    {
+      q: "How do you apply filters in an Apriso grid?",
+      a: `<p>Filtering in Apriso grids can be implemented in multiple ways depending on whether you want inline grid filtering or external parameter-driven filtering:</p>
+<p><strong>1. Built-in jqGrid toolbar filter (inline):</strong></p>
+<pre>// Enable the filter toolbar
+jQuery("#myGrid").jqGrid("filterToolbar", {
+    stringResult: true,
+    searchOnEnter: true,
+    defaultSearch: "cn"   // "cn" = contains
+});
+
+// Or add a search button to trigger it
+jQuery("#myGrid").jqGrid("searchGrid", {
+    multipleSearch: true,
+    showQuery: true
+});</pre>
+<p><strong>2. External filter inputs above the grid (custom):</strong></p>
+<pre>// HTML: input box + button above the grid
+&lt;input type="text" id="txtPartNo" placeholder="Part No..." /&gt;
+&lt;button onclick="applyFilter()"&gt;Search&lt;/button&gt;
+
+// JS: reload grid with filter parameter
+function applyFilter() {
+    var partNo = document.getElementById("txtPartNo").value;
+    jQuery("#myGrid").jqGrid("setGridParam", {
+        postData: { PartNo: partNo }
+    }).trigger("reloadGrid");
+}</pre>
+<p><strong>3. Server-side filtering — WHERE clause in the Database Operation:</strong></p>
+<pre>SELECT WorkOrderNo, PartNo, Status, PlannedDate
+FROM   WO_WORKORDER
+WHERE  (:PartNo = '' OR PartNo LIKE '%' + :PartNo + '%')
+AND    (:Status = '' OR Status = :Status)
+ORDER  BY PlannedDate DESC</pre>
+<p><strong>4. Client-side filtering on already-loaded data:</strong></p>
+<pre>// jqGrid client-side filter after loadonce: true
+jQuery("#myGrid").jqGrid("setGridParam", {
+    search: true,
+    postData: {
+        filters: JSON.stringify({
+            groupOp: "AND",
+            rules: [{ field: "Status", op: "eq", data: "Active" }]
+        })
+    }
+}).trigger("reloadGrid");</pre>
+<div class="note">For production grids with thousands of records, always filter on the server side (WHERE clause) — never load all records to the client and filter in memory. This is a critical performance consideration.</div>`,
+      level: "medium"
+    },
+    {
+      q: "How do you add checkboxes to an Apriso grid?",
+      a: `<p>Checkboxes in Apriso grids serve two purposes: row selection (multi-select) and editable boolean data columns. Both are configured differently.</p>
+<p><strong>1. Row selection checkbox column (jqGrid):</strong></p>
+<pre>jQuery("#myGrid").jqGrid({
+    multiselect: true,          // adds checkbox column automatically
+    multiboxonly: true,         // checkbox ONLY triggers selection (not row click)
+
+    onSelectRow: function(rowId, status) {
+        console.log("Row " + rowId + " selected: " + status);
+    },
+
+    onSelectAll: function(rowIds, status) {
+        console.log("All rows selected: " + status);
+    }
+});
+
+// Get all selected row IDs
+var selected = jQuery("#myGrid").jqGrid("getGridParam", "selarrrow");
+console.log(selected); // ["row1", "row2", ...]</pre>
+<p><strong>2. Editable checkbox column (boolean data field):</strong></p>
+<pre>colModel: [{
+    name:      "IsApproved",
+    label:     "Approved",
+    formatter: "checkbox",          // renders as checkbox
+    formatoptions: { disabled: false },  // false = user can click it
+    editable:  true,
+    edittype:  "checkbox",
+    editoptions: { value: "Yes:No" }    // checked:unchecked values
+}]</pre>
+<p><strong>3. Read the checkbox value in JavaScript:</strong></p>
+<pre>// Get checkbox state for a specific cell
+var rowData = jQuery("#myGrid").jqGrid("getRowData", rowId);
+var isApproved = rowData.IsApproved; // "Yes" or "No"
+
+// Or for the selected rows
+jQuery("#myGrid").jqGrid("getGridParam", "selarrrow").forEach(function(id) {
+    var row = jQuery("#myGrid").jqGrid("getRowData", id);
+    // process each selected row
+});</pre>
+<p><strong>4. Selection Grid 2.0 (ag-Grid) checkbox:</strong></p>
+<pre>// Column definition
+{ headerCheckboxSelection: true,   // select-all checkbox in header
+  checkboxSelection: true,         // per-row checkbox
+  field: "IsSelected",
+  width: 50 }</pre>
+<div class="note">When using <code>multiselect: true</code>, the grid automatically adds a checkbox column as the first column. Do not manually add a checkbox column on top of it — you will get duplicate checkbox columns.</div>`,
+      level: "medium"
+    },
+    {
+      q: "What are the types of Business Components in Apriso (excluding Table Update, Delete, and Insert)? Which have you used in Production or other modules?",
+      a: `<p>Business Components (also called GBOs — Global Business Objects) are the standard Apriso API layer. They encapsulate business logic for all platform objects. Key types beyond simple table operations:</p>
+<table>
+<tr><th>Business Component</th><th>Module</th><th>Description</th></tr>
+<tr><td><code>WorkOrder.Create</code></td><td>Production</td><td>Creates a new work order with full routing and BOM resolution</td></tr>
+<tr><td><code>WorkOrder.Start / Complete / Close</code></td><td>Production</td><td>Lifecycle state transitions for a work order</td></tr>
+<tr><td><code>Lot.Create / Split / Merge</code></td><td>Inventory</td><td>Creates a new lot or splits/merges existing lots</td></tr>
+<tr><td><code>SerializedUnit.Create</code></td><td>Inventory</td><td>Creates a serialized unit record</td></tr>
+<tr><td><code>GoodsMovement.Issue / Receive</code></td><td>Inventory / WH</td><td>Posts material consumption or receipt against a work order</td></tr>
+<tr><td><code>InspectionPlan.Execute</code></td><td>Quality</td><td>Runs a quality inspection plan and records results</td></tr>
+<tr><td><code>NCR.Create / Disposition</code></td><td>Quality</td><td>Creates a Non-Conformance Report and assigns disposition</td></tr>
+<tr><td><code>Personnel.GetCurrent</code></td><td>Labor</td><td>Returns the currently logged-in operator's details</td></tr>
+<tr><td><code>Equipment.GetStatus</code></td><td>Equipment</td><td>Returns current status and availability of a machine</td></tr>
+<tr><td><code>Genealogy.GetTree</code></td><td>Traceability</td><td>Returns the full forward/backward genealogy tree for a serial/lot</td></tr>
+<tr><td><code>Determination.Resolve</code></td><td>Platform</td><td>Evaluates classic or advanced determination rules at runtime</td></tr>
+<tr><td><code>Session.GetValue / SetValue</code></td><td>Platform</td><td>Read/write session variables shared across process steps</td></tr>
+<tr><td><code>Message.Send</code></td><td>Platform</td><td>Sends an in-system message or email notification</td></tr>
+</table>
+<p><strong>Used in production projects:</strong></p>
+<ul>
+<li><strong>Production module:</strong> <code>WorkOrder.Create</code>, <code>WorkOrder.Start</code>, <code>WorkOrder.Complete</code>, <code>GoodsMovement.Issue</code></li>
+<li><strong>Quality module:</strong> <code>InspectionPlan.Execute</code>, <code>NCR.Create</code>, <code>NCR.Disposition</code></li>
+<li><strong>Inventory module:</strong> <code>Lot.Create</code>, <code>Lot.Split</code>, <code>GoodsMovement.Receive</code></li>
+<li><strong>Platform:</strong> <code>Session.GetValue</code>, <code>Session.SetValue</code>, <code>Determination.Resolve</code></li>
+</ul>`,
+      level: "hard"
+    },
+    {
+      q: "What are the types of Functions available in Apriso (e.g., SqlQuery, UserFormula)? Explain each.",
+      a: `<p>Apriso provides several types of configurable function objects that can be called from Business Processes and screens to encapsulate reusable logic:</p>
+<table>
+<tr><th>Function Type</th><th>Description</th><th>Use Case</th></tr>
+<tr><td><strong>SqlQuery Function</strong></td><td>A named, reusable SQL SELECT query stored as a platform object. Accepts input parameters and returns a result set (collection)</td><td>Shared lookup queries — e.g., "Get all active work orders for a facility" — called from multiple processes without duplicating SQL</td></tr>
+<tr><td><strong>UserFormula Function</strong></td><td>A mathematical or string formula defined using a formula editor. Supports arithmetic, string, and date operations. No SQL involved</td><td>Calculate yield percentage, compute remaining quantity, format a display string combining multiple fields</td></tr>
+<tr><td><strong>Scripting Function</strong></td><td>A reusable block of VBScript/JScript registered as a named function, callable from any scripting operation</td><td>Complex conditional logic, date parsing, recursive calculations shared across processes</td></tr>
+<tr><td><strong>Web Service Function</strong></td><td>A configured call to an external REST or SOAP endpoint, wrapped as a named function object</td><td>Call SAP BAPI, trigger an IoT device command, invoke an external validation API</td></tr>
+<tr><td><strong>Determination Function</strong></td><td>A named determination rule set (Classic or Advanced) that resolves which process or operation to call at runtime based on input attributes</td><td>Route a work order to the correct inspection process based on part family and facility</td></tr>
+<tr><td><strong>Report Function</strong></td><td>A named report definition (Crystal Reports, SSRS, or Apriso native) that can be triggered from a process</td><td>Generate a work order traveller PDF, print a quality certificate</td></tr>
+</table>
+<p><strong>How SqlQuery is called from a Scripting Operation:</strong></p>
+<pre>Dim result
+result = FlexNet.ExecuteFunction("GetActiveWorkOrders", _
+    Array("FacilityKey", facilityKey))
+' result is a Collection of rows</pre>
+<div class="note"><code>SqlQuery</code> and <code>UserFormula</code> functions are the most commonly used. They promote the DRY (Don't Repeat Yourself) principle — define the logic once, reuse it everywhere without copy-pasting SQL or formula code.</div>`,
+      level: "hard"
+    },
+    {
+      q: "What are the types of Variables in Apriso? Explain each.",
+      a: `<p>Apriso uses variables at different scopes and lifetimes across process execution:</p>
+<table>
+<tr><th>Variable Type</th><th>Scope</th><th>Lifetime</th><th>How to Use</th></tr>
+<tr><td><strong>Process Parameter</strong></td><td>Single Business Process execution</td><td>Lives only for the duration of that process run</td><td>Defined in the process definition; mapped between operations via transitions</td></tr>
+<tr><td><strong>Session Variable</strong></td><td>Entire user session (all processes)</td><td>Persists from login until session ends or explicitly cleared</td><td><code>FlexNet.Session.SetValue("Key", value)</code> / <code>GetValue("Key")</code></td></tr>
+<tr><td><strong>Local Script Variable</strong></td><td>Single Scripting Operation</td><td>Exists only while that scripting operation executes</td><td>Declared with <code>Dim</code> in VBScript — not accessible outside the operation</td></tr>
+<tr><td><strong>Global Configuration Variable</strong></td><td>Entire Apriso installation</td><td>Permanent until changed by an administrator</td><td>Stored in Apriso System Settings / Configuration Parameters; read via <code>FlexNet.GetConfiguration("Key")</code></td></tr>
+<tr><td><strong>Container Field</strong></td><td>Current screen / view operation</td><td>Lives for the duration of the view</td><td>Bound to UI controls via <code>gef:bind="Container.FieldName"</code>; readable in JavaScript</td></tr>
+<tr><td><strong>Collection (Array Variable)</strong></td><td>Process Parameter (list type)</td><td>Same as process parameter</td><td>Returned by Database Operations as a row collection; iterable in scripting</td></tr>
+</table>
+<p><strong>Example — Session Variable vs Process Parameter:</strong></p>
+<pre>''' Session Variable — survives across process calls
+FlexNet.Session.SetValue "SelectedFacility", "Plant01"
+
+''' Process Parameter — passed between operations within one process
+FlexNet.SetParameter "WorkOrderNo", "WO-10041"
+Dim wo : wo = FlexNet.GetParameter("WorkOrderNo")</pre>
+<div class="note">Use Session Variables sparingly — they persist across the entire session and can cause hard-to-debug data leakage if not explicitly cleared. Prefer Process Parameters for data that is only relevant to a single execution flow.</div>`,
+      level: "medium"
+    },
+    {
+      q: "How do you create a dropdown (ComboBox) in an Apriso form screen?",
+      a: `<p>Dropdowns in Apriso form screens are implemented using the <strong>ComboBox Business Control</strong>. The data source can be static (hardcoded list) or dynamic (database query).</p>
+<p><strong>Method 1 — Static list ComboBox in Screen Builder:</strong></p>
+<ul>
+<li>In Screen Builder, drag a <strong>ComboBox</strong> control onto the form canvas</li>
+<li>In the control properties, set <code>DataSource = Static</code></li>
+<li>Add items manually: Value / Display Text pairs (e.g., <code>A = Active</code>, <code>I = Inactive</code>)</li>
+<li>Bind to a container field: <code>gef:bind="Container.Status"</code></li>
+</ul>
+<p><strong>Method 2 — Dynamic ComboBox (database-driven) in Screen Builder:</strong></p>
+<ul>
+<li>Set <code>DataSource = SqlQuery</code> or <code>Database Operation</code></li>
+<li>Write the query: <code>SELECT FacilityKey AS Value, FacilityName AS DisplayText FROM FA_FACILITY WHERE Status = 'Active'</code></li>
+<li>Map <code>ValueField = FacilityKey</code> and <code>DisplayField = FacilityName</code></li>
+</ul>
+<p><strong>Method 3 — HTML ComboBox using a <code>&lt;select&gt;</code> element:</strong></p>
+<pre>&lt;!-- Static dropdown in HTML screen --&gt;
+&lt;select id="ddlStatus" gef:bind="Container.Status"&gt;
+    &lt;option value=""&gt;-- Select --&lt;/option&gt;
+    &lt;option value="Active"&gt;Active&lt;/option&gt;
+    &lt;option value="Hold"&gt;On Hold&lt;/option&gt;
+    &lt;option value="Closed"&gt;Closed&lt;/option&gt;
+&lt;/select&gt;
+
+&lt;!-- Dynamic dropdown — populate via JavaScript in OnLoad --&gt;
+&lt;select id="ddlFacility" gef:bind="Container.FacilityKey"&gt;&lt;/select&gt;</pre>
+<pre>// OnLoad — populate dynamic dropdown from a collection parameter
+function OnLoad() {
+    var coll = GEF.Containers["MainContainer"]["Facilities"].Value;
+    var sel  = document.getElementById("ddlFacility");
+    sel.innerHTML = '&lt;option value=""&gt;-- Select --&lt;/option&gt;';
+    for (var i = 0; i &lt; coll.Count; i++) {
+        var opt = document.createElement("option");
+        opt.value = coll.Item(i)["FacilityKey"];
+        opt.text  = coll.Item(i)["FacilityName"];
+        sel.add(opt);
+    }
+}</pre>
+<div class="note">Always include a blank first option (<code>-- Select --</code>) in dropdowns that are mandatory — this forces the user to make an explicit choice rather than accidentally submitting the first item by default.</div>`,
+      level: "easy"
+    },
+    {
+      q: "What are the standard M&M (Maintenance & Manufacturing) screens in Apriso that you have used?",
+      a: `<p>Standard M&amp;M screens are the out-of-the-box Apriso screens available in the ADC (Apriso Desktop Client) and Portal for configuring and managing the system. These are pre-built by Dassault Systemes and require no custom development:</p>
+<table>
+<tr><th>Screen Name</th><th>Module</th><th>Purpose</th></tr>
+<tr><td><strong>Work Order Management</strong></td><td>Production</td><td>Create, search, release, and manage work orders</td></tr>
+<tr><td><strong>Bill of Process (BOP) Editor</strong></td><td>Production</td><td>Define and maintain process routing and operation sequences</td></tr>
+<tr><td><strong>Material Master</strong></td><td>Inventory</td><td>Create and maintain part/material definitions</td></tr>
+<tr><td><strong>Facility Maintenance</strong></td><td>Admin</td><td>Create and configure plants, work centres, and production lines</td></tr>
+<tr><td><strong>Equipment Maintenance</strong></td><td>Equipment</td><td>Manage machine records, status, and calibration schedules</td></tr>
+<tr><td><strong>Employee Maintenance</strong></td><td>Labor</td><td>Create and manage personnel records, roles, and skills</td></tr>
+<tr><td><strong>Inspection Plan Maintenance</strong></td><td>Quality</td><td>Define quality inspection plans, characteristics, and tolerances</td></tr>
+<tr><td><strong>NCR Management</strong></td><td>Quality</td><td>Log, review, and disposition non-conformance reports</td></tr>
+<tr><td><strong>Lot / Serial Unit Management</strong></td><td>Inventory</td><td>Track and manage lots and serialised units through the plant</td></tr>
+<tr><td><strong>FlexPart Configuration</strong></td><td>Admin</td><td>Create and configure screen and process definitions (FlexParts)</td></tr>
+<tr><td><strong>Role &amp; Permission Maintenance</strong></td><td>Security</td><td>Define roles and assign screen/process access rights</td></tr>
+<tr><td><strong>Determination Maintenance</strong></td><td>Platform</td><td>Configure classic and advanced determination rules</td></tr>
+<tr><td><strong>Parameter Configuration</strong></td><td>Admin</td><td>Manage global system parameters and configuration values</td></tr>
+</table>
+<p><strong>Most frequently used in project work:</strong> Work Order Management, Material Master, Facility Maintenance, Employee Maintenance, FlexPart Configuration, and Role Maintenance.</p>`,
+      level: "easy"
+    },
+    {
+      q: "Have you worked on Master Data in Apriso? If yes, explain some examples and how to configure them.",
+      a: `<p>Yes — Master Data setup is typically one of the first activities in any Apriso implementation. It establishes the foundational reference data that all production processes depend on.</p>
+<p><strong>Key Master Data objects and configuration steps:</strong></p>
+<p><strong>1. Facility (Plant) Setup:</strong></p>
+<ul>
+<li>Navigate to <strong>Facility Maintenance</strong> screen in ADC</li>
+<li>Create a new Facility record: Code, Name, Address, Time Zone, Parent Facility (for hierarchy)</li>
+<li>Assign a Calendar (working days and shifts) to the facility</li>
+<li>Activate the facility to make it available for production</li>
+</ul>
+<p><strong>2. Material / Part Setup:</strong></p>
+<ul>
+<li>Navigate to <strong>Material Master</strong> screen</li>
+<li>Enter Part Number, Description, Unit of Measure, Material Type (Raw / WIP / Finished Goods)</li>
+<li>Set tracking method: Lot-tracked, Serialised, or Non-tracked</li>
+<li>Define shelf life, storage conditions, and ABC classification if required</li>
+</ul>
+<p><strong>3. Bill of Process (BOP / Routing) Setup:</strong></p>
+<ul>
+<li>Navigate to <strong>BOP Editor</strong></li>
+<li>Create a new BOP for the finished part number</li>
+<li>Add operation steps in sequence: Op 10 — Machining, Op 20 — Inspection, Op 30 — Assembly</li>
+<li>For each step, assign: Work Centre / Resource, Standard Time, Required Skills, Material components</li>
+<li>Link Quality Inspection Plans to the relevant operation steps</li>
+</ul>
+<p><strong>4. Employee / Personnel Setup:</strong></p>
+<pre>-- Via ADC: Employee Maintenance screen
+1. Enter Employee ID, First Name, Last Name
+2. Assign Facility and Default Shift
+3. Assign Roles (Operator, Supervisor, Quality Inspector)
+4. Add Skill Certifications (e.g. Forklift, Welding, CMM Operation)
+5. Activate the employee record</pre>
+<div class="note">Master Data is usually loaded in bulk from ERP (SAP MM/PP) via an integration interface rather than entered manually. Always validate data quality before loading: check for duplicate part numbers, missing UOMs, and invalid facility codes.</div>`,
+      level: "medium"
+    },
+    {
+      q: "Explain the tree structure of MI (Manufacturing Intelligence) in Apriso.",
+      a: `<p><strong>Manufacturing Intelligence (MI)</strong> in Apriso provides analytics, reporting, and KPI dashboards built on top of the operational data captured during production execution. Its structure follows a layered hierarchy:</p>
+<table>
+<tr><th>Layer</th><th>Component</th><th>Description</th></tr>
+<tr><td><strong>Data Source Layer</strong></td><td>Apriso Operational DB + Data Warehouse</td><td>Raw transactional data from all MES modules (production, quality, inventory). An optional analytical data warehouse (star schema) is pre-built for reporting</td></tr>
+<tr><td><strong>Data Provider Layer</strong></td><td>SqlQuery / OLAP Cube / Web Service</td><td>Named data connections configured in MI that connect dashboards to data sources. Supports direct SQL, OLAP cubes, and external REST APIs</td></tr>
+<tr><td><strong>Metric / KPI Layer</strong></td><td>Calculated Fields &amp; Measures</td><td>Business metrics computed from raw data — OEE, First Pass Yield, On-Time Delivery, Scrap Rate. Defined using formula editor or SQL expressions</td></tr>
+<tr><td><strong>Visualisation Layer</strong></td><td>Dashboard Items</td><td>Charts (bar, line, pie, gauge), grids, pivot tables, sparklines, and cards that display the metrics visually</td></tr>
+<tr><td><strong>Dashboard Layer</strong></td><td>Dashboard Definition (FlexPart)</td><td>A named dashboard composed of multiple visualisation items, saved as a FlexPart and assigned to roles/facilities</td></tr>
+<tr><td><strong>Security Layer</strong></td><td>Roles &amp; Filters</td><td>Role-based access controls which dashboards a user can see, and facility-level data filters so each plant only sees its own data</td></tr>
+</table>
+<p><strong>Navigation tree in the MI Builder:</strong></p>
+<pre>MI Root
+  ├── Data Connections
+  │     ├── SqlQuery: GetProductionSummary
+  │     └── OLAP Cube: QualityMetrics
+  ├── Dashboards
+  │     ├── Plant OEE Dashboard
+  │     │     ├── Gauge: OEE %
+  │     │     ├── Line Chart: OEE Trend (last 30 days)
+  │     │     └── Grid: Downtime by Work Centre
+  │     └── Quality Summary Dashboard
+  │           ├── KPI Card: First Pass Yield
+  │           └── Pie Chart: Defects by Category
+  └── Reports
+        └── Daily Production Report</pre>
+<div class="note">MI dashboards are linked to FlexParts and can be embedded directly in the ADC or Portal, making them accessible to operators and supervisors on the shop floor without requiring a separate BI tool.</div>`,
+      level: "hard"
+    },
+    {
+      q: "How do you create Web Services in Apriso?",
+      a: `<p>Apriso exposes its Business Processes as web services (SOAP and REST) and also consumes external web services — both are configured using the <strong>Web Services Manager</strong> in the Apriso Configuration environment.</p>
+<p><strong>Exposing an Apriso process as a web service (inbound):</strong></p>
+<ul>
+<li>Open <strong>Web Services Manager</strong> from Apriso Configuration Manager</li>
+<li>Create a new Web Service definition and select the target Business Process</li>
+<li>Map the process Input/Output parameters to the web service request/response fields</li>
+<li>Select the protocol: SOAP (WSDL generated automatically) or REST (JSON payload)</li>
+<li>Assign security credentials (Basic Auth, token, or certificate)</li>
+<li>Publish — Apriso generates a WSDL or OpenAPI endpoint URL automatically</li>
+<li>The external system (e.g., SAP, WMS) calls this URL to trigger the Apriso process</li>
+</ul>
+<p><strong>Consuming an external web service from Apriso (outbound):</strong></p>
+<ul>
+<li>In <strong>Integration Framework</strong>, create a new Web Service Connection: enter the WSDL URL or REST endpoint</li>
+<li>Import the WSDL — Apriso parses it and lists available operations</li>
+<li>Select the operation to call and map its input/output parameters</li>
+<li>In Process Builder, add an <strong>Integration Operation</strong> node and select this configured connection</li>
+<li>Map Apriso process parameters to the web service request fields</li>
+</ul>
+<pre>-- Example: Outbound REST call to SAP in a scripting operation
+Dim endpoint : endpoint = FlexNet.GetConfiguration("SAP_REST_URL")
+Dim payload  : payload  = "{""WorkOrder"": """ &amp; woNo &amp; """, ""Qty"": " &amp; qty &amp; "}"
+Dim response : response = FlexNet.InvokeWebService(endpoint, "POST", payload)</pre>
+<div class="note">For regulated environments, always log both the request payload and response in Apriso's audit log. This is required for traceability in FDA 21 CFR Part 11 and IATF 16949 compliance audits.</div>`,
+      level: "hard"
+    },
+    {
+      q: "How do MES and ERP communicate? In which format — XML or JSON?",
+      a: `<p>MES (Apriso) and ERP (SAP) communication uses multiple formats and protocols depending on the integration method configured:</p>
+<table>
+<tr><th>Integration Method</th><th>Format</th><th>Direction</th><th>Typical Use</th></tr>
+<tr><td><strong>SAP IDoc</strong></td><td>XML (IDoc XML structure)</td><td>Bidirectional</td><td>Work order download from SAP PP; production confirmation upload to SAP</td></tr>
+<tr><td><strong>SAP BAPI / RFC</strong></td><td>Binary RPC (over SAP protocol), not XML/JSON natively</td><td>Apriso → SAP</td><td>Synchronous goods movements, material availability checks</td></tr>
+<tr><td><strong>SOAP Web Service</strong></td><td>XML (SOAP envelope)</td><td>Bidirectional</td><td>Older enterprise integrations; SAP PI/PO middleware</td></tr>
+<tr><td><strong>REST Web Service</strong></td><td>JSON</td><td>Bidirectional</td><td>Modern integrations with SAP S/4HANA APIs, third-party ERP, cloud services</td></tr>
+<tr><td><strong>File-based (FTP/SFTP)</strong></td><td>XML or CSV flat file</td><td>Bidirectional</td><td>Batch overnight exchanges — BOM, routing, master data sync</td></tr>
+<tr><td><strong>Message Queue (JMS/MQ)</strong></td><td>XML or JSON</td><td>Bidirectional</td><td>Asynchronous, decoupled real-time messaging between systems</td></tr>
+</table>
+<p><strong>Most common in Apriso + SAP projects:</strong></p>
+<ul>
+<li><strong>IDoc over XML</strong> is the primary format for SAP PP order downloads and production order confirmations — it is the SAP-native standard and handled by Apriso's built-in SAP Integration Framework (SIF)</li>
+<li><strong>REST/JSON</strong> is increasingly preferred for new S/4HANA integrations due to SAP's OData API layer</li>
+<li>The format is negotiated between the MES architect and the SAP Basis/Integration team at project start</li>
+</ul>
+<div class="note">Apriso's SAP Integration Framework (SIF) handles IDoc parsing and mapping automatically — developers configure the mapping in Process Builder rather than writing raw XML parsing code. For REST/JSON, developers use the Integration Operation with manual JSON construction in VBScript.</div>`,
+      level: "medium"
+    },
+    {
+      q: "Do you have knowledge of Post-Upgrade Utilities and the Infrastructure (Infra) part of Apriso?",
+      a: `<p>Post-upgrade utilities and infrastructure knowledge is important for Apriso implementation and support engineers. Here is an overview of both areas:</p>
+<p><strong>Post-Upgrade Utilities:</strong></p>
+<ul>
+<li><strong>Schema Migration Tool</strong> — Applies database schema changes (new tables, columns, indexes) required by the new Apriso version after the application upgrade</li>
+<li><strong>Data Migration Utility</strong> — Transforms existing data to match new data structures or default values introduced in the upgraded version</li>
+<li><strong>Package Re-application</strong> — Customer configuration packages (custom processes, screens) are re-applied on top of the upgraded standard platform to ensure customisations are preserved</li>
+<li><strong>Configuration Comparison Tool</strong> — Compares the standard baseline of the new version against the customer's customised configuration to identify conflicts or deprecated components</li>
+<li><strong>Apriso Health Check</strong> — Validates the upgraded environment: checks service status, database connectivity, license validity, and process execution</li>
+<li><strong>Log Review</strong> — After upgrade, application logs are reviewed for errors or warnings related to deprecated APIs or schema mismatches</li>
+</ul>
+<p><strong>Infrastructure (Infra) Components:</strong></p>
+<table>
+<tr><th>Component</th><th>Description</th></tr>
+<tr><td><strong>Application Server</strong></td><td>Windows Server + IIS hosting the FlexNet application tier (Java / .NET)</td></tr>
+<tr><td><strong>Database Server</strong></td><td>Oracle or SQL Server hosting the Apriso schema</td></tr>
+<tr><td><strong>Load Balancer</strong></td><td>Distributes client requests across multiple app server nodes in high-availability setups</td></tr>
+<tr><td><strong>Message Queue Server</strong></td><td>JMS / IBM MQ for asynchronous integration messaging</td></tr>
+<tr><td><strong>File Transfer Server</strong></td><td>SFTP server for file-based integration with ERP</td></tr>
+<tr><td><strong>Reverse Proxy</strong></td><td>Nginx / Apache for SSL termination and URL routing</td></tr>
+</table>
+<div class="note">Post-upgrade activities follow a strict sequence: DB backup → schema migration → application upgrade → package re-application → smoke testing. Skipping any step risks data corruption or process failures in production.</div>`,
+      level: "hard"
+    },
+    {
+      q: "What are the key database tables for Production, Quality, and Inventory modules in Apriso?",
+      a: `<p>Apriso's database follows consistent naming conventions: the first two letters denote the module prefix.</p>
+<p><strong>Production Module (<code>WO_</code> prefix):</strong></p>
+<table>
+<tr><th>Table</th><th>Description</th></tr>
+<tr><td><code>WO_WORKORDER</code></td><td>Work order header — number, status, planned qty, facility, scheduled dates</td></tr>
+<tr><td><code>WO_WORKORDEROP</code></td><td>Work order operations — each routing step with status and actual times</td></tr>
+<tr><td><code>WO_WORKORDERMAT</code></td><td>Work order material requirements — BOM components for the work order</td></tr>
+<tr><td><code>WO_WORKORDERRES</code></td><td>Work order resource requirements — equipment and labour assignments</td></tr>
+<tr><td><code>PR_PROCESS</code></td><td>Process (BOP) definition header</td></tr>
+<tr><td><code>PR_PROCESSOP</code></td><td>Individual operation steps within a BOP</td></tr>
+</table>
+<p><strong>Quality Module (<code>QI_</code> prefix):</strong></p>
+<table>
+<tr><th>Table</th><th>Description</th></tr>
+<tr><td><code>QI_INSPPLAN</code></td><td>Inspection plan header — linked to BOP operation or work order</td></tr>
+<tr><td><code>QI_INSPPLANCHAR</code></td><td>Inspection characteristics — measurement parameters and tolerances</td></tr>
+<tr><td><code>QI_INSPRESULT</code></td><td>Inspection results — actual measured values per characteristic</td></tr>
+<tr><td><code>QI_NCR</code></td><td>Non-Conformance Report header — defect details, quantity, detected by</td></tr>
+<tr><td><code>QI_NCRDISP</code></td><td>NCR disposition records — use-as-is, rework, scrap decisions</td></tr>
+<tr><td><code>QI_DEFECT</code></td><td>Defect code master — catalogue of defect types and categories</td></tr>
+</table>
+<p><strong>Inventory Module (<code>LO_</code> / <code>SU_</code> / <code>IN_</code> prefix):</strong></p>
+<table>
+<tr><th>Table</th><th>Description</th></tr>
+<tr><td><code>LO_LOT</code></td><td>Lot master — lot ID, part number, quantity, status, location</td></tr>
+<tr><td><code>SU_SERUNIT</code></td><td>Serialised unit master — serial number, status, current work order</td></tr>
+<tr><td><code>IN_INVTRANSACTION</code></td><td>Inventory transaction log — all goods movements, issues, receipts</td></tr>
+<tr><td><code>MA_MATERIAL</code></td><td>Material master — part number, description, UOM, tracking type</td></tr>
+<tr><td><code>GEN_GENEALOGY</code></td><td>Genealogy records — parent-child relationships between lots/serials</td></tr>
+</table>
+<div class="note">Never write directly to these tables using ad-hoc SQL in production — always use Apriso's Business Components (GBOs) or Business Processes. Direct writes bypass business rule enforcement, audit logging, and transaction management, which can corrupt data integrity.</div>`,
+      level: "hard"
+    },
+    {
+      q: "What are aggregate functions in SQL? Give examples.",
+      a: `<p>Aggregate functions perform a calculation on a set of rows and return a single summary value. They are used with <code>GROUP BY</code> to summarise data by category.</p>
+<table>
+<tr><th>Function</th><th>Description</th><th>Example</th></tr>
+<tr><td><code>COUNT()</code></td><td>Counts the number of rows (or non-NULL values)</td><td><code>COUNT(*)</code> — total rows; <code>COUNT(LotID)</code> — non-null lot IDs</td></tr>
+<tr><td><code>SUM()</code></td><td>Adds up all values in a numeric column</td><td>Total quantity produced per work order</td></tr>
+<tr><td><code>AVG()</code></td><td>Calculates the arithmetic mean</td><td>Average cycle time per operation</td></tr>
+<tr><td><code>MIN()</code></td><td>Returns the smallest value in the column</td><td>Earliest planned start date across all open work orders</td></tr>
+<tr><td><code>MAX()</code></td><td>Returns the largest value in the column</td><td>Maximum scrap quantity in a shift</td></tr>
+<tr><td><code>STDEV()</code></td><td>Standard deviation — spread of values</td><td>Process capability analysis on measurement results</td></tr>
+<tr><td><code>VAR()</code></td><td>Statistical variance</td><td>Quality SPC calculations</td></tr>
+</table>
+<pre>-- Production summary: total qty completed per work centre per shift
+SELECT
+    ResourceCode,
+    ShiftDate,
+    COUNT(WorkOrderNo)    AS TotalOrders,
+    SUM(CompletedQty)     AS TotalQtyCompleted,
+    AVG(CycleTimeMinutes) AS AvgCycleTime,
+    MIN(StartTime)        AS EarliestStart,
+    MAX(EndTime)          AS LatestEnd
+FROM WO_WORKORDEROP
+WHERE Status   = 'Completed'
+AND   ShiftDate = CAST(GETDATE() AS DATE)
+GROUP BY ResourceCode, ShiftDate
+HAVING SUM(CompletedQty) &gt; 0
+ORDER BY ResourceCode;</pre>
+<div class="note"><code>HAVING</code> filters groups after aggregation (like a WHERE clause for aggregate results). <code>WHERE</code> filters individual rows before aggregation. You cannot use aggregate functions inside a <code>WHERE</code> clause — use <code>HAVING</code> instead.</div>`,
+      level: "easy"
+    },
+    {
+      q: "What is the difference between a Stored Procedure and a Function in SQL?",
+      a: `<table>
+<tr><th>Aspect</th><th>Stored Procedure (SP)</th><th>SQL Function (UDF)</th></tr>
+<tr><td><strong>Return value</strong></td><td>Returns zero or more result sets; optionally returns a value via OUTPUT parameters or RETURN (integer only)</td><td>Must return exactly one value — either a scalar or a table</td></tr>
+<tr><td><strong>Called using</strong></td><td><code>EXEC usp_ProcName @Param</code> — cannot be used inside SELECT</td><td><code>SELECT dbo.fnName(@Param)</code> — can be used inside SELECT, WHERE, JOIN</td></tr>
+<tr><td><strong>DML allowed?</strong></td><td>Yes — can INSERT, UPDATE, DELETE, and use transactions</td><td>Scalar UDFs: no DML. Table-valued functions: read-only SELECT only (generally)</td></tr>
+<tr><td><strong>Transaction control</strong></td><td>Can use BEGIN TRANSACTION / COMMIT / ROLLBACK</td><td>Cannot control transactions</td></tr>
+<tr><td><strong>Error handling</strong></td><td>Full TRY/CATCH support</td><td>Limited error handling</td></tr>
+<tr><td><strong>Performance</strong></td><td>Pre-compiled — generally faster for complex multi-step logic</td><td>Scalar UDFs called per-row can severely hurt query performance on large datasets; table-valued functions perform better</td></tr>
+<tr><td><strong>Use in Apriso</strong></td><td>Called via Database Operation type "Stored Procedure"</td><td>Called inline in SQL queries used in Database Operations</td></tr>
+</table>
+<pre>-- Stored Procedure — returns result via OUTPUT parameter
+CREATE PROCEDURE usp_GetCompletedQty
+    @WorkOrderNo NVARCHAR(50),
+    @CompletedQty DECIMAL(18,4) OUTPUT
+AS
+BEGIN
+    SELECT @CompletedQty = CompletedQty
+    FROM   WO_WORKORDER
+    WHERE  WorkOrderNo = @WorkOrderNo
+END;
+
+-- Scalar Function — used inside a SELECT statement
+CREATE FUNCTION dbo.fn_GetYield (@Produced DECIMAL, @Scrapped DECIMAL)
+RETURNS DECIMAL(5,2)
+AS BEGIN
+    RETURN CASE WHEN @Produced = 0 THEN 0
+                ELSE ((@Produced - @Scrapped) / @Produced) * 100
+           END
+END;
+
+-- Usage: SELECT WorkOrderNo, dbo.fn_GetYield(ProducedQty, ScrapQty) AS Yield
+-- FROM WO_WORKORDER</pre>`,
+      level: "medium"
+    },
+    {
+      q: "How can we return a value from a Stored Procedure in SQL?",
+      a: `<p>There are three mechanisms to return values from a SQL Stored Procedure:</p>
+<p><strong>Method 1 — OUTPUT parameter (most common, supports any data type):</strong></p>
+<pre>CREATE PROCEDURE usp_GetOrderStatus
+    @WorkOrderNo  NVARCHAR(50),
+    @Status       NVARCHAR(50) OUTPUT,
+    @CompletedQty DECIMAL(18,4) OUTPUT
+AS
+BEGIN
+    SELECT @Status = Status, @CompletedQty = CompletedQty
+    FROM   WO_WORKORDER
+    WHERE  WorkOrderNo = @WorkOrderNo
+END;
+
+-- Calling it:
+DECLARE @st NVARCHAR(50), @qty DECIMAL(18,4)
+EXEC usp_GetOrderStatus 'WO-10041', @st OUTPUT, @qty OUTPUT
+SELECT @st AS Status, @qty AS Qty</pre>
+<p><strong>Method 2 — RETURN statement (integer status code only):</strong></p>
+<pre>CREATE PROCEDURE usp_ValidateOrder @WorkOrderNo NVARCHAR(50)
+AS
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM WO_WORKORDER WHERE WorkOrderNo = @WorkOrderNo)
+        RETURN -1    -- Not found
+    RETURN 0         -- Success
+END;
+
+-- Calling it:
+DECLARE @rc INT
+EXEC @rc = usp_ValidateOrder 'WO-10041'
+IF @rc = -1 PRINT 'Order not found'</pre>
+<p><strong>Method 3 — SELECT result set (returns a row/recordset to the caller):</strong></p>
+<pre>CREATE PROCEDURE usp_GetOpenOrders @FacilityKey INT
+AS
+BEGIN
+    SELECT WorkOrderNo, PartNo, Status, PlannedQty
+    FROM   WO_WORKORDER
+    WHERE  FacilityKey = @FacilityKey
+    AND    Status IN ('Released', 'InProgress')
+    ORDER  BY PlannedDate
+END;
+-- Caller reads the result set as a recordset/collection</pre>
+<p><strong>In Apriso Process Builder:</strong></p>
+<ul>
+<li>OUTPUT parameters are mapped to Apriso process parameters in the Database Operation configuration</li>
+<li>Result sets (Method 3) are mapped to a Collection parameter and then bound to a grid</li>
+</ul>
+<div class="note">Use OUTPUT parameters for single scalar values. Use SELECT result sets for multiple rows. Use RETURN only for integer status codes (0 = success, negative = error) — it is not suitable for returning business data.</div>`,
+      level: "medium"
+    },
+    {
+      q: "What are Indexes in SQL? What are the types and when should you use them?",
+      a: `<p>An Index is a database object that speeds up data retrieval by creating a sorted data structure on one or more columns, similar to a book's index. Without an index, the database performs a full table scan — reading every row.</p>
+<table>
+<tr><th>Index Type</th><th>Description</th><th>Use Case</th></tr>
+<tr><td><strong>Clustered Index</strong></td><td>Physically sorts and stores the table rows in index order. Only ONE per table (the table IS the index)</td><td>Primary key columns — the most common access path for the table</td></tr>
+<tr><td><strong>Non-Clustered Index</strong></td><td>Separate structure with pointers back to the table rows. Multiple allowed per table</td><td>Frequently filtered columns — WorkOrderNo, PartNo, Status, FacilityKey</td></tr>
+<tr><td><strong>Unique Index</strong></td><td>Enforces uniqueness on one or more columns — no duplicate values allowed</td><td>Business key columns — Lot ID, Serial Number, Employee ID</td></tr>
+<tr><td><strong>Composite Index</strong></td><td>Index on two or more columns together</td><td>Queries that always filter on the same combination of columns — (FacilityKey, Status, PlannedDate)</td></tr>
+<tr><td><strong>Filtered Index</strong></td><td>Index on a subset of rows defined by a WHERE clause</td><td>Index only "Active" records — <code>WHERE Status = 'Active'</code> — to avoid indexing archived data</td></tr>
+<tr><td><strong>Full-Text Index</strong></td><td>Optimised for text search (CONTAINS, FREETEXT)</td><td>Searching description fields or work instruction text</td></tr>
+</table>
+<pre>-- Non-clustered index on a frequently queried column
+CREATE NONCLUSTERED INDEX IX_WO_FacilityStatus
+ON WO_WORKORDER (FacilityKey, Status)
+INCLUDE (WorkOrderNo, PlannedQty, PlannedDate);
+-- INCLUDE adds columns to the index leaf without sorting on them
+-- This allows the query to be satisfied entirely from the index (covering index)
+
+-- Check if query uses the index (SQL Server)
+SET STATISTICS IO ON;
+SELECT WorkOrderNo, PlannedQty FROM WO_WORKORDER
+WHERE FacilityKey = 5 AND Status = 'Released';</pre>
+<div class="note">More indexes are not always better — each index adds overhead to every INSERT, UPDATE, and DELETE because the index must be maintained. On high-volume Apriso shop floor tables like <code>IN_INVTRANSACTION</code> and <code>GEN_GENEALOGY</code>, index excessive creation degrades write performance significantly. Index only columns used in WHERE, JOIN, and ORDER BY clauses.</div>`,
+      level: "medium"
+    },
+    {
+      q: "What is the difference between PL/SQL (Oracle) and T-SQL (SQL Server) in the context of Apriso?",
+      a: `<p>Apriso supports both Oracle and SQL Server as backend databases. Since the platform is database-agnostic, the stored procedures and custom queries must be written in the correct dialect for the target database. Here are the key differences developers encounter:</p>
+<table>
+<tr><th>Aspect</th><th>T-SQL (SQL Server)</th><th>PL/SQL (Oracle)</th></tr>
+<tr><td><strong>Full name</strong></td><td>Transact-SQL — Microsoft's SQL extension</td><td>Procedural Language / SQL — Oracle's SQL extension</td></tr>
+<tr><td><strong>Variable declaration</strong></td><td><code>DECLARE @varName DATATYPE</code></td><td><code>varName DATATYPE;</code> in a <code>DECLARE</code> block</td></tr>
+<tr><td><strong>String concatenation</strong></td><td><code>+</code> operator: <code>'Hello' + ' World'</code></td><td><code>||</code> operator: <code>'Hello' || ' World'</code></td></tr>
+<tr><td><strong>Current date/time</strong></td><td><code>GETDATE()</code></td><td><code>SYSDATE</code></td></tr>
+<tr><td><strong>Top N rows</strong></td><td><code>SELECT TOP 10 ...</code></td><td><code>WHERE ROWNUM &lt;= 10</code> or <code>FETCH FIRST 10 ROWS ONLY</code></td></tr>
+<tr><td><strong>If/else</strong></td><td><code>IF ... BEGIN ... END ELSE BEGIN ... END</code></td><td><code>IF ... THEN ... ELSE ... END IF;</code></td></tr>
+<tr><td><strong>Error handling</strong></td><td><code>BEGIN TRY ... END TRY BEGIN CATCH ... END CATCH</code></td><td><code>EXCEPTION WHEN ... THEN ...</code></td></tr>
+<tr><td><strong>Auto-increment key</strong></td><td><code>IDENTITY(1,1)</code> or <code>SEQUENCE</code></td><td><code>SEQUENCE</code> + trigger, or <code>GENERATED ALWAYS AS IDENTITY</code></td></tr>
+<tr><td><strong>Stored procedure</strong></td><td><code>CREATE PROCEDURE</code></td><td><code>CREATE OR REPLACE PROCEDURE</code></td></tr>
+<tr><td><strong>Null check</strong></td><td><code>ISNULL(col, default)</code></td><td><code>NVL(col, default)</code></td></tr>
+<tr><td><strong>String conversion</strong></td><td><code>CAST(x AS NVARCHAR)</code> or <code>CONVERT()</code></td><td><code>TO_CHAR(x)</code></td></tr>
+</table>
+<div class="note">In Apriso projects, always confirm which database is being used before writing stored procedures or complex queries. A T-SQL script will not execute on an Oracle database. Apriso's own standard SQL in Process Builder Database Operations uses ANSI-compatible SQL, but any custom SP must be written in the correct dialect.</div>`,
+      level: "medium"
+    },
+    {
+      q: "What is the use of the Apriso Configuration Manager?",
+      a: `<p>The <strong>Apriso Configuration Manager</strong> (also called the <strong>Central Configuration</strong> tool) is the administrative console used by system administrators and senior developers to manage all environment-level settings of the Apriso platform — separate from day-to-day process development in Process Builder.</p>
+<p><strong>Key capabilities:</strong></p>
+<table>
+<tr><th>Category</th><th>What You Configure</th></tr>
+<tr><td><strong>Database Connections</strong></td><td>Configure the primary database connection string (server, schema, credentials) and connection pool settings</td></tr>
+<tr><td><strong>Application Server Settings</strong></td><td>Set server host, port, timeout values, session duration, and thread pool sizes</td></tr>
+<tr><td><strong>License Management</strong></td><td>View and apply Apriso license keys; monitor concurrent user counts vs licensed limits</td></tr>
+<tr><td><strong>Integration Connections</strong></td><td>Configure named integration endpoints — SAP RFC destinations, JMS brokers, SFTP servers, REST base URLs</td></tr>
+<tr><td><strong>Email (SMTP) Settings</strong></td><td>Configure the mail server for Apriso email notifications sent from process flows</td></tr>
+<tr><td><strong>Logging Configuration</strong></td><td>Set log levels (DEBUG / INFO / WARN / ERROR), log file paths, and log rotation settings</td></tr>
+<tr><td><strong>Security Settings</strong></td><td>Configure SSO (LDAP/Active Directory), password policies, session timeout, and IP whitelists</td></tr>
+<tr><td><strong>Package Management</strong></td><td>Import and export configuration packages (process definitions, screens) between DEV / QA / PROD environments</td></tr>
+<tr><td><strong>Scheduler</strong></td><td>Schedule background jobs — automatic work order closure, KPI calculation, data archival, interface polling</td></tr>
+<tr><td><strong>System Parameters</strong></td><td>Global key-value configuration parameters readable by processes via <code>FlexNet.GetConfiguration("Key")</code></td></tr>
+</table>
+<div class="note">Configuration Manager changes take effect immediately or after a service restart depending on the setting. Always document changes made in Configuration Manager in the change log — unlike Process Builder changes, Configuration Manager changes are not version-controlled by the standard package mechanism.</div>`,
+      level: "medium"
+    },
+    {
+      q: "How can we use a mobile screen from FlexParts in Apriso?",
+      a: `<p>Apriso's mobile screens are delivered through the <strong>DELMIA Apriso Mobile Apps</strong> (iOS and Android) and the <strong>mobile-responsive Portal</strong>. FlexParts are the configuration unit that defines which screens and processes are available in the mobile client.</p>
+<p><strong>Steps to configure a mobile screen via FlexParts:</strong></p>
+<ul>
+<li><strong>Step 1 — Create or identify the FlexPart:</strong> In ADC, navigate to <strong>FlexPart Configuration M&amp;M screen</strong>. A FlexPart of type <code>Operation</code> or <code>Screen</code> defines the process or screen you want to expose</li>
+<li><strong>Step 2 — Enable mobile visibility:</strong> Open the FlexPart Editor → General tab → check <strong>"Display in Mobile Applications"</strong> checkbox</li>
+<li><strong>Step 3 — Assign to a Menu Item:</strong> Link the FlexPart to a Menu Item in the mobile app's navigation structure. The Menu Item determines where in the app's home screen the operation appears</li>
+<li><strong>Step 4 — Assign Role:</strong> In the FlexPart's Security tab, assign the Roles that should be able to see and use this screen on the mobile device</li>
+<li><strong>Step 5 — Restart services:</strong> After any Menu Item configuration change, all Apriso services must be restarted for the change to take effect in the mobile app</li>
+</ul>
+<p><strong>Mobile screen design considerations:</strong></p>
+<pre>/* Mobile screens require responsive CSS */
+/* Avoid fixed pixel widths — use percentages or viewport units */
+.screen-wrapper { width: 100%; max-width: 480px; }
+
+/* Large touch targets for shop floor gloves */
+button { min-height: 48px; font-size: 16px; }
+input  { min-height: 44px; font-size: 16px; }</pre>
+<ul>
+<li>Grids on mobile should use minimal columns — 3 to 4 maximum</li>
+<li>Avoid controls that require hover interaction (no tooltips)</li>
+<li>Test with both portrait and landscape orientations on the target device</li>
+<li>Not all Business Controls work on mobile — verify compatibility in the Mobile Apps Implementation Guide (e.g., Cube Viewer is read-only; File Upload not supported on Android below v5)</li>
+</ul>
+<div class="note">The mobile app connects to the same Apriso server as the desktop client — there is no separate mobile database. All process logic runs on the server; only the UI rendering differs on the mobile device.</div>`,
+      level: "medium"
+    },
+    {
+      q: "We need to add a custom filter above a grid using an input box for product number, and a Search button — the grid should reload showing only matching records. How do you implement this?",
+      a: `<p>This is a very common pattern in Apriso HTML screens. The implementation involves three coordinated parts: the HTML UI, the JavaScript filter logic, and the Database Operation SQL.</p>
+<p><strong>1. HTML — input box and button above the grid:</strong></p>
+<pre>&lt;div style="display:flex; gap:8px; margin-bottom:12px; align-items:center;"&gt;
+    &lt;label for="txtPartNo"&gt;Product Number:&lt;/label&gt;
+    &lt;input type="text" id="txtPartNo"
+           placeholder="Enter part number..."
+           style="width:220px; padding:6px 10px;"
+           onkeydown="if(event.key==='Enter') searchGrid();" /&gt;
+    &lt;button onclick="searchGrid()"&gt;Search&lt;/button&gt;
+    &lt;button onclick="clearFilter()"&gt;Clear&lt;/button&gt;
+&lt;/div&gt;
+
+&lt;!-- Grid renders below --&gt;
+&lt;table id="productGrid"&gt;&lt;/table&gt;</pre>
+<p><strong>2. JavaScript — read the input and reload the grid with the filter parameter:</strong></p>
+<pre>function searchGrid() {
+    var partNo = document.getElementById("txtPartNo").value.trim();
+
+    // Validate: warn if empty
+    if (partNo === "") {
+        alert("Please enter a product number before searching.");
+        return;
+    }
+
+    // Pass the filter value to the grid's data source
+    // jqGrid approach — postData carries parameters to the server-side operation
+    jQuery("#productGrid").jqGrid("setGridParam", {
+        postData: { PartNo: partNo }
+    }).trigger("reloadGrid", [{ page: 1 }]);
+    // Reset to page 1 so the user always sees results from the beginning
+}
+
+function clearFilter() {
+    document.getElementById("txtPartNo").value = "";
+    jQuery("#productGrid").jqGrid("setGridParam", {
+        postData: { PartNo: "" }
+    }).trigger("reloadGrid", [{ page: 1 }]);
+}</pre>
+<p><strong>3. Database Operation SQL — parameterised WHERE clause:</strong></p>
+<pre>SELECT
+    PartNo,
+    PartDescription,
+    UOM,
+    MaterialType,
+    Status
+FROM MA_MATERIAL
+WHERE (:PartNo = ''
+       OR PartNo LIKE '%' + :PartNo + '%'
+       OR PartDescription LIKE '%' + :PartNo + '%')
+AND   Status = 'Active'
+ORDER BY PartNo ASC</pre>
+<p><strong>4. Bind the SQL parameter to the grid's postData in Process Builder:</strong></p>
+<ul>
+<li>In the Database Operation configuration, map the <code>:PartNo</code> SQL parameter to the process parameter <code>PartNo</code></li>
+<li>The <code>postData.PartNo</code> value sent by <code>reloadGrid</code> is received by the server-side operation as this process parameter</li>
+<li>The <code>OR :PartNo = ''</code> condition means: if the filter is blank, return all records</li>
+</ul>
+<div class="note">Always reset to page 1 when reloading with a filter (<code>{ page: 1 }</code>) — otherwise the user may see "no records" because they were on page 5 of the old results and the filtered dataset has fewer pages. Also debounce the search if wiring it to the input's <code>oninput</code> event to avoid firing a query on every keystroke.</div>`,
+      level: "hard"
     }
   ]
 };
